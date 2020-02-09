@@ -639,9 +639,10 @@ function recFolderInfo(i, val, partial){
 				$(div, {class: delbtn, click: function(){delPreset(this);}, html:
 					$('<i>', {class: 'material-icons', text: 'delete'}) }),
 				$(div, {class: container, append: [
-					$(div, {class: cell, text: 'フォルダ'}),
-					$(div, {class: cell, text: (val.recFolder=='' ? '!Default' : val.recFolder)}),
-					$('<input>', {class: 'recFolderList', type: 'hidden', name: partial+'recFolder', value: val.recFolder}) ]}),
+					$(div, {class: middle, text: 'フォルダ'}),
+					$(div, {class: textfield, append: [
+						$('<input>', {class: 'has-icon mdl-textfield__input recFolderList', type: 'text', name: partial+'recFolder', id: partial+'recFolder'+i, value: val.recFolder, autocomplete: 'off'}),
+						$('<label>', {class: 'mdl-textfield__label', for: partial+'recFolder', text: 'フォルダ'}) ]}) ]}),
 				$(div, {class: container, append: [
 					$(div, {class: middle, text: '出力PlugIn'}),
 					$(div, {class: select, html:
@@ -655,7 +656,7 @@ function recFolderInfo(i, val, partial){
 				$(div, {class: container, append: [
 					$(div, {class: middle, text: 'オプション'}),
 					$(div, {class: textfield, append: [
-						$('<input>', {class: 'has-icon mdl-textfield__input', type: 'text', name: partial+'recName', id: partial+'recName'+i, val: recNamePlugIn[2]}),
+						$('<input>', {class: 'has-icon mdl-textfield__input', type: 'text', name: partial+'recName', id: partial+'recName'+i, val: recNamePlugIn[2], autocomplete: 'off'}),
 						$('<label>', {class: 'mdl-textfield__label', for: partial+'recName'+i, text: 'ファイル名PlugIn'}),
 						$('<i>', {class: 'addmacro material-icons', text: 'add', click: function(){macro(this);} }) ]}) ]}) ]});
 }
