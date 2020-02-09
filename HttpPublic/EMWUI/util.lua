@@ -21,6 +21,8 @@ function template(temp)
 <title>EpgTimer</title>
 <link rel="icon" href="]=]..path..[=[img/EpgTimer.ico">
 <link rel="apple-touch-icon" sizes="256x256" href="]=]..path..[=[img/apple-touch-icon.png">
+<link rel="manifest" href="]=]..path..[=[manifest.json">
+<link rel="manifest" href="]=]..path..[=[manifest.webmanifest">
 ]=]
 ..(not css==0 and css or '<link rel="stylesheet" href="'..path..'css/material.min.css">')..'\n'
 ..((temp.dialog or temp.progres) and '<link rel="stylesheet" href="'..path..'css/dialog-polyfill.css">\n' or '')..[=[
@@ -38,6 +40,14 @@ function template(temp)
 <script src="]=]..path..[=[js/material.min.js"></script>
 <script src="]=]..path..[=[js/hammer.min.js"></script>
 <script src="]=]..path..[=[js/jquery.hammer.js"></script>
+<script src="]=]..path..[=[js/pwacompat.min.js"></script>
+<script>
+window.addEventListener("load", function() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("]=]..path..[=[serviceworker.js");
+  }
+});
+</script>
 ]=]
 ..((temp.dialog or temp.progres) and '<script src="'..path..'js/dialog-polyfill.js"></script>\n' or '')
 ..'<script>var path=\''..path..'\';var root=\''..PathToRoot()..'\';</script>\n'
