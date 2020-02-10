@@ -18,6 +18,8 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
 
 ---
 
+![Screenshot](screenshot.png)
+
 **EDCB の WebUI を Material Design Lite を使いマテリアルデザインに沿うように表示するソフトです**  
 予約の追加確認、番組表の表示などの基本的な機能のほか、リモート視聴、ファイル再生などができます  
 また、[Legacy WebUI](https://github.com/xtne6f/EDCB/tree/work-plus-s/ini/HttpPublic/legacy) をベースとして作成しています  
