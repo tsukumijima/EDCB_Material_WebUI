@@ -74,6 +74,7 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  outline: none;
   background: transparent; }
   .pulldown {
     padding: 4px 0;
@@ -92,7 +93,9 @@ select {
     height: 33px;
     border: none;
     border-bottom: 1px solid rgba(0,0,0 ,0.12);
-    padding: 4px 24px 4px 0; }
+    padding: 4px 24px 4px 12px; }
+  select[multiple] {
+    padding: 8px 10px; }
 
 
 dialog {
@@ -237,7 +240,8 @@ dialog {
 .mdl-radio,
 .mdl-checkbox {
   height: auto;
-  min-height:24px; }
+  min-height: 24px;
+  margin-bottom: 5px; }
 
 
 
@@ -542,8 +546,11 @@ h4 .mdl-button--icon {
 
 .drop-down+ul {
   display: none;
-  margin-top: 0;
   list-style-type: none; }
+  .drop-down+ul li {
+    margin-bottom: 4px; }
+    .drop-down+ul li:last-of-type {
+      margin-bottom: 0px; }
   .drop-down+ul .mdl-switch__label,
   .drop-down+ul .mdl-radio__label {
     font-size: 14px; }
@@ -560,6 +567,13 @@ h4 .mdl-button--icon {
 .mdl-navigation__link .material-icons {
   font-size: 24px;
   margin-right: 32px; }
+
+.mdl-layout__drawer .mdl-navigation__link {
+  display: flex !important;
+  align-items: center; }
+
+.mdl-layout__drawer .mdl-navigation__link.drop-down {
+  cursor: pointer; }
 
 .mdl-layout__drawer .mdl-navigation {
   -webkit-flex-grow: 1;
@@ -1017,6 +1031,9 @@ h4 .mdl-button--icon {
     padding: 16px 32px 0;
     overflow-x: hidden;
     overflow-y: auto; }
+    #sidePanel .mdl-tabs__panel ul, #sidePanel .mdl-tabs__panel li {
+      letter-spacing: 0.07em;
+      line-height: 1.4em; }
   @media (max-width: 479px) {
     .sidePanel_headder {
       padding: 0 16px; }
@@ -1050,7 +1067,7 @@ h4 .mdl-button--icon {
 .form {
   padding: 0 0 12px!important; }
   .mdl-grid.form>div {
-    padding: 4px 0; }
+    padding: 8px 0; }
   .mdl-grid.form>div:first-child {
     padding-top: 0; }
   .form>div{
@@ -1171,6 +1188,19 @@ h4 .mdl-button--icon {
   font-size: 16px;
   cursor: pointer; }
 
+.mdl-cell--3-col {
+  width: 75%;
+  margin-bottom: 10px !important; }
+.multiple {
+  margin-bottom: 10px; }
+.mdl-grid.form .preset {
+  padding: 15px; }
+  .mdl-grid.form .preset select {
+    margin-bottom: 10px; }
+input[type=text] {
+  padding: 4px 24px 4px 12px; }
+  #search-bar input[type=text] {
+    padding: 0; }  
 
 
 /* 時間絞り込み */

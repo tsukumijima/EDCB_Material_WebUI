@@ -502,7 +502,7 @@ function RecSettingTemplate(rs)
       local recNameDll, recNameOp=v.recNamePlugIn:match('^(.+%.dll)%?(.*)')
       s=s..'<div class="preset mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">'
         ..'<div class="delPreset mdl-button mdl-button--icon mdl-button--mini-icon mdl-js-button"><i class="material-icons">delete</i></div>'
-        ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell">フォルダ</div><div class="mdl-cell">'..v.recFolder..'</div></div>\n'
+        ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--middle">フォルダ</div><div class="mdl-cell mdl-textfield mdl-js-textfield"><input class="has-icon mdl-textfield__input recFolderList" type="text" name="recFolder" value="'..v.recFolder..'" autocomplete="off"><label class="mdl-textfield__label" for="recFolder'..i..'"></div></div>\n'
         ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--middle">出力PlugIn</div>\n'
         ..'<div class="pulldown mdl-cell mdl-grid mdl-grid--no-spacing"><select name="writePlugIn">\n'
       for j,w in ipairs(WriteDir) do
@@ -586,7 +586,7 @@ function RecSettingTemplate(rs)
     ..'<option value="2"'..(rs.suspendMode==2 and ' selected' or '')..'>休止\n'
     ..'<option value="3"'..(rs.suspendMode==3 and ' selected' or '')..'>シャットダウン\n'
     ..'<option value="4"'..(rs.suspendMode==4 and ' selected' or '')..'>何もしない\n</select></div>\n'
-    ..'<div><label for="reboot" class="reboot mdl-checkbox mdl-js-checkbox"><input id="reboot" class="mdl-checkbox__input" type="checkbox" name="rebootFlag" value="1"'..((rs.suspendMode==0 and rsdef and rsdef.rebootFlag or rs.suspendMode~=0 and rs.rebootFlag) and ' checked' or '')..(rs.suspendMode==0 and ' disabled' or '')..'><span class="mdl-checkbox__label">復帰後再起動する</span></label></div></div></div>\n'
+    ..'<div style="margin-top: 8px;"><label for="reboot" class="reboot mdl-checkbox mdl-js-checkbox"><input id="reboot" class="mdl-checkbox__input" type="checkbox" name="rebootFlag" value="1"'..((rs.suspendMode==0 and rsdef and rsdef.rebootFlag or rs.suspendMode~=0 and rs.rebootFlag) and ' checked' or '')..(rs.suspendMode==0 and ' disabled' or '')..'><span class="mdl-checkbox__label">復帰後再起動する</span></label></div></div></div>\n'
 
   local batFilePath, batFileTag=rs.batFilePath:match('^([^*]*)%*?(.*)$')
   s=s..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle">録画後実行bat</div>\n'
@@ -625,7 +625,7 @@ function SerchTemplate(si)
 
     ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet">NOTキーワード</div>\n'
     ..'<div class="mdl-cell mdl-cell--6-col mdl-cell--9-col-desktop mdl-grid mdl-grid--no-spacing"><div class="mdl-cell--12-col mdl-textfield mdl-js-textfield"><input class="mdl-textfield__input" type="text" name="notKey" value="'..si.notKey..'" size="25" id="notKey" autocomplete="off"><label class="mdl-textfield__label" for="notKey"></label></div>\n'
-    ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n'
+    ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing" style="margin-top: 8px;">\n'
     ..'<div><label for="reg" class="mdl-checkbox mdl-js-checkbox"><input id="reg" class="mdl-checkbox__input" type="checkbox" name="regExpFlag" value="1"'..(si.regExpFlag and ' checked' or '')..'><span class="mdl-checkbox__label">正規表現</span></label></div><div class="mdl-layout-spacer"></div>\n'
     ..'<div><label for="aimai" class="mdl-checkbox mdl-js-checkbox"><input id="aimai" class="mdl-checkbox__input" type="checkbox" name="aimaiFlag" value="1"'..(si.aimaiFlag and ' checked' or '')..'><span class="mdl-checkbox__label">あいまい検索</span></label></div><div class="mdl-layout-spacer"></div>\n'
     ..'<div><label for="titleOnly" class="mdl-checkbox mdl-js-checkbox"><input id="titleOnly" class="mdl-checkbox__input" type="checkbox" name="titleOnlyFlag" value="1"'..(si.titleOnlyFlag and ' checked' or '')..'><span class="mdl-checkbox__label">番組名のみ</span></label></div><div class="mdl-layout-spacer"></div>\n'
