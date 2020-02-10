@@ -4,6 +4,7 @@ dofile(mg.script_name:gsub('[^\\/]*$','')..'util.lua')
 --tkntrec=tonumber(edcb.GetPrivateProfile('SET','tkntrec',false,ini))~=0
 Roboto=tonumber(edcb.GetPrivateProfile('SET','Roboto',false,ini))~=0
 subGenreoption=edcb.GetPrivateProfile('SET','subGenreoption','ALL',ini)
+FIND_BY_OPEN=tonumber(edcb.GetPrivateProfile('SET','FIND_BY_OPEN',false,ini))~=0
 PAGE_COUNT=tonumber(edcb.GetPrivateProfile('SET','PAGE_COUNT','30',ini))
 
 oneseg=tonumber(edcb.GetPrivateProfile('GUIDE','oneseg',false,ini))~=0
@@ -175,6 +176,10 @@ ct.main='<main class="tab-swipe mdl-layout__content">\n<div class="mdl-grid">\n<
   ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle"><span id="tt-Roboto">Webフォント "Roboto"</span></div><div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
   ..'<div><label for="Roboto" class="mdl-switch mdl-js-switch"><input id="Roboto" type="checkbox" class="mdl-switch__input" name="Roboto" value="1"'..(Roboto and ' checked' or '')..'><span class="mdl-switch__label"></span></label></div>\n'
   ..'<span class="mdl-tooltip" for="tt-Roboto">Material Design推奨フォント</span></div>\n'
+
+  ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle"><span id="tt-findbyopen">名前付きパイプを推測して開く</span></div><div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
+  ..'<div><label for="findbyopen" class="mdl-switch mdl-js-switch"><input id="findbyopen" type="checkbox" class="mdl-switch__input" name="FIND_BY_OPEN" value="1"'..(Roboto and ' checked' or '')..'><span class="mdl-switch__label"></span></label></div>\n'
+  ..'<span class="mdl-tooltip" for="tt-findbyopen">一部の環境でリモート視聴が動作しない場合にオンにしてください</span></div>\n'
 
   ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle"><span id="tt-count">一覧表示数</span></div>\n<div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
   ..'<div class="number"><div class="mdl-textfield mdl-js-textfield"><input class="mdl-textfield__input" type="number" name="PAGE_COUNT" value="'..PAGE_COUNT..'" min="0" id="PAGE_COUNT"><label class="mdl-textfield__label" for="PAGE_COUNT"></label><span class="mdl-textfield__error">Input is not a number!</span></div></div>\n'

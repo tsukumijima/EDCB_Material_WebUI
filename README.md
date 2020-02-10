@@ -1,33 +1,52 @@
 EDCB Material WebUI
 ===================
 
-**EDCBのWebUIをMaterial Design Lite使いマテリアルデザインに沿うよう表示します**  
-予約の追加確認、番組表の表示などの基本的な機能ほかリモート視聴、ファイル再生などができます  
-また[Legacy WebUI](https://github.com/xtne6f/EDCB/tree/work-plus-s/ini/HttpPublic/legacy)をベースとして作成しています  
-おかげさまでド素人にも作成することができましたxtne6f氏に感謝します
+### 本家からの変更点
 
+* 未承認の Pull Requests を個人的に取り込んだ
+* PWA (Progressive Web Apps) に対応した
+* 録画設定から録画保存フォルダを指定できるようにした
+* EPG予約・録画結果画面でサイドパネルから予約・結果を削除できるようにした
+* 余白が足りない部分などのスタイルを修正し、より見やすくした
+* FIND_BY_OPEN (名前付きパイプが見つからないときにパイプ名を推測して開くフラグ) を設定画面から設定できるようにした
+* 本家の README がお世辞にもわかりやすいとは言い難い上誤字脱字が多かったので、(勝手に) 加筆修正した
+
+---
+
+**EDCB の WebUI を Material Design Lite を使いマテリアルデザインに沿うように表示するソフトです**  
+予約の追加確認、番組表の表示などの基本的な機能のほか、リモート視聴、ファイル再生などができます  
+また、[Legacy WebUI](https://github.com/xtne6f/EDCB/tree/work-plus-s/ini/HttpPublic/legacy) をベースとして作成しています  
+おかげさまでド素人にも作成することができました、xtne6f 氏に感謝します
 
 ### 使い方
 
-1. 必要なファイルのダウンロード (EDCBの[releases](https://github.com/xtne6f/EDCB/releases)と[ffmpeg.org](https://www.ffmpeg.org)から)
-   * CivetWebの組み込んだEDCB一式 ([xtne6f氏](https://github.com/xtne6f/EDCB)の[work-plus-s-180529](https://github.com/xtne6f/EDCB/releases/tag/work-plus-s-180529)以降)
-   * lua52.dll [^1]
-   * ffmpeg.exe [^2]
-   * ffprobe.exe [^2] [^3]
-   * readex.exe [^2]
+1. 必要なファイルをダウンロードする ( EDCB の [releases](https://github.com/xtne6f/EDCB/releases) と [ffmpeg.zeranoe.com](https://ffmpeg.zeranoe.com/builds/) から)
+   * CivetWeb が組み込まれた EDCB 一式 ([ xtne6f 氏](https://github.com/xtne6f/EDCB)の [work-plus-s-180529](https://github.com/xtne6f/EDCB/releases/tag/work-plus-s-180529) 以降)
+   * lua52.dll … (WebUI の表示に使用します)
+   * ffmpeg.exe … (再生機能に使用します)
+   * ffprobe.exe … (再生機能に使用します・ffmpeg に同梱)
+   * readex.exe … (再生機能に使用します)
 
-[^1]: WebUIを表示に使用
-[^2]: 再生機能に使用  
-[^3]: ffmpegに同梱  
-1. EDCBのReadme_Mod.txtの[*Civetwebの組み込みについて*](https://github.com/xtne6f/EDCB/blob/24efede96ae3c856c6419ee89b8fec6eeee8f8b6/Document/Readme_Mod.txt#L556-L660)をよく読む
-1. EDCBのHTTPサーバ機能を有効化、アクセス制御を設定
+2. EDCB 同梱の Readme_Mod.txt の [*Civetwebの組み込みについて*](https://github.com/xtne6f/EDCB/blob/24efede96ae3c856c6419ee89b8fec6eeee8f8b6/Document/Readme_Mod.txt#L556-L660) をよく読む
+   * Web サーバー周りの設定は全てこの項目に記載されています
+
+3. EDCB の HTTP サーバ機能を有効化し、アクセス制御を設定する
+   * EpgTimerSrv.ini に以下を追記するか、tkntrec 版の EpgTimer であれば EpgTimer の設定 → 基本設定 → ネットワーク → Httpサーバ から設定できます
    * `EnableHttpSrv=1`
    * `HttpAccessControlList=+127.0.0.1,+192.168.0.0/16`
-1. http://localhost:5510/ にアクセス、サーバー機能が有効になったことを確認  
-\# ここでうまく行かない場合はEDCBの設定の問題だと思われます
-1. ファイルを適切に設置 (下記の配置例を参照)  
-   \# 解凍したEDCB-work-plus-s-bin.zipにこのEMWUIを放り込めばとりあえず動くはず  
-   \# 配置例 (＊があるものは必ずその場所に配置)
+   * Httpポートは `HttpPort=5510` のように指定可能です
+     * カンマ区切りで複数指定できます (例: `HttpPort=5510,5530` )
+     * HTTPS 対応のポートとする場合は末尾に s をつけてください (例: `HttpPort=80,443s` )
+   * HTTPS に対応させる場合は、別途 OpenSSL に同梱されている libcrypto-1_1.dll・libssl-1_1.dll ( 64bit 版 EDCB の場合は 64bit 版 OpenSSL に同梱されている libcrypto-1_1-x64.dll・libssl-1_1-x64.dll ) と OpenSSL で生成した ssl_cert.pem を EpgTimerSrv.exe と同じフォルダに入れる必要があります
+     * ssl_cert.pem の生成方法は先述の [Civetwebの組み込みについて](https://github.com/xtne6f/EDCB/blob/24efede96ae3c856c6419ee89b8fec6eeee8f8b6/Document/Readme_Mod.txt#L556-L660) に記載されています
+     * ただし、そのままでは HTTPS でアクセスすることはできません、ssl_cert.pem の生成過程で作られる server.crt (自己署名証明書) を EMWUI を利用するデバイスにインストールしておく必要があります
+
+4. http://localhost:5510/ にアクセスし、サーバー機能が有効になったことを確認する  
+   * ここでうまく行かない場合は EDCB の設定の問題だと思われます
+
+5. ファイルを適切に設置する (下記の配置例を参照)  
+   * 解凍した EDCB-work-plus-s-bin.zip にこの EMWUI を放り込めばとりあえず動くはず
+   * 配置例 (＊があるものは必ずその場所に配置)
 
        EDCB/
         ├─ HttpPublic/
@@ -47,56 +66,63 @@ EDCB Material WebUI
         ├─ lua52.dll ＊
         └─ SendTSTCP.dll ＊
 
-1. リモート視聴する場合EpgDataCap_Bon.exeのネットワーク設定でTCP送信に0.0.0.1 ポート:0を設定
-1. http://localhost:5510/EMWUI/ にアクセス出来たら準備完了、設定へ
+6. 放送中のテレビをリモート視聴する場合、EpgDataCap_Bon の設定 → ネットワーク設定 → TCP送信 から、  
+   ラジオボタンで SrvPipe を選択し、ポートが 0 になっていることを確認して、追加ボタンをクリックして送信先一覧に追加する
+   * 送信先一覧に 0.0.0.1:0 と表示されていれば OK です
+   * 10秒ほどプレイヤーに砂嵐が流れたあと、Error : MEDIA_ERR_SRC_NOT_SUPPORTED (名前付きパイプが見つかりませんでした) というエラーが表示される場合は、正しく送信先が追加されていないと思われます
+     * EpgDataCap_Bon.exe を開き、TCP送信: 0.0.0.1:0 と表示されているかどうか確認してください
+   * 一部の環境 (EpgTimerSrv をサービス化している・OS が Windows7 の場合？) で、TCP 送信の設定を行ったのにリモート視聴が同様のエラーで失敗することがあります
+     * その場合、HttpPublic.ini の \[SET\] 以下に、FIND_BY_OPEN=1 と追記し、もう一度試してみてください
+     * このフォークを使用する場合は、設定 → 全般 → 名前付きパイプを推測して開く をオンにすることでも同様の設定が行えます
+
+7. http://localhost:5510/EMWUI/ にアクセス出来たら準備完了です、設定を行いましょう
 
 ### 設定
-基本的な設定は[設定ページ](http://localhost:5510/EMWUI/setting)にて行ってください  
-必要に応じて設定ファイル(Setting\HttpPublic.ini)のSETに以下のキー[=デフォルト]を指定してください  
-HttpPublic.iniは設定ページにて設定を保存すると作成されます
+基本的な設定は [設定ページ](http://localhost:5510/EMWUI/setting) にて行ってください  
+必要に応じて、設定ファイル (Setting\HttpPublic.ini) の \[SET\] 以下に以下のキー[=デフォルト]を指定してください  
+HttpPublic.ini は設定ページにて設定を保存すると作成されます
 
-`batPath[=EDCBのbatフォルダ]`  
-録画設定でこのフォルダの.batと.ps1が選択可能になります  
-\# 変更する場合必ずフルパスで設定  
-`batFileTag=`  
-録画タグの候補を表示できるようになります  
-カンマ区切りで指定ください
+* `batPath[=EDCBのbatフォルダ]`  
+  * 録画設定でこのフォルダの.batと.ps1が選択可能になります  
+  * 変更する場合、必ずフルパスで設定してください
+* `batFileTag=`  
+  * 録画タグの候補を表示できるようになります  
+  * カンマ区切りで指定してください
 
 #### テーマカラー
-テーマカラーを変えることが出来ます  
-[MDLのcustomize](http://www.getmdl.io/customize/index.html)で色を選択cssをダウンロードしmaterial.min.cssを置き換える  
-もしくは設定ファイルでキーcssに下部に表示されてる<LINK>タグを追加することでできます  
+テーマカラーを変更することが出来ます  
+[Material Design Lite の customize](http://www.getmdl.io/customize/index.html) で色を選択、cssをダウンロードし material.min.css を置き換えます  
+もしくは設定ファイル (HttpPublic.ini) の CSS キーに下部に表示されている<LINK>タグを追加することでも可能です
 \# 例`css=<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-pink.min.css" />`  
-※一部(border周り)が置き換えただけでは対応できない部分があります(.mark)  
-気になる方はcssをuser.cssに記述してください  
-色は[Material design](http://www.google.com/design/spec/style/color.html#color-color-palette)から選択することをお勧めします  
-.markのborderはA700を指定しています
+* 一部(border周り)が置き換えただけでは対応できない部分があります(.mark)
+  * 気になる方はcssをuser.cssに記述してください  
+* 色は[Material design](http://www.google.com/design/spec/style/color.html#color-color-palette)から選択することをお勧めします  
+  * .markのborderはA700を指定しています
 
 #### 再生機能
 **ffmpeg.exe、ffprobe.exe、readex.exeが必要です**  
-`ffmpeg[=Tools\ffmpeg]`  
-ffmpeg.exeのパス
 
-`ffprobe[=Tools\ffprobe]`  
-ffprobe.exeのパス
+* `ffmpeg[=Tools\ffmpeg]`  
+  * ffmpeg.exe のパスを指定します
+* `ffprobe[=Tools\ffprobe]`  
+  * ffprobe.exeのパス
+* `readex[=Tools\readex]`  
+  * readex.exeのパス
+* `xprepare[=48128]`  
+  * 転送開始前に変換しておく量(bytes)
 
-`readex[=Tools\readex]`  
-readex.exeのパス
-
-`xprepare[=48128]`  
-転送開始前に変換しておく量(bytes)
-
-#### 画質設定(ffmpegオプション)
+#### 画質設定 ( ffmpeg オプション)
 `mp4[=0]`  
-デフォルトでmp4にトランスコードする場合1に
+デフォルトで mp4 にトランスコードする場合 1 に設定してください
 
 以下のような設定を書き込むとデフォルトと以下で指定した設定を読み込めるようになります
 
     [MOVIE]
     HD=-vcodec libvpx -b 1800k -quality realtime -cpu-used 2 -vf yadif=0:-1:1  -s 960x540 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
 
-もしくは[MOVIE]に`画質名=ffmpegオプション`を[SET]のqualityに画質名をコンマ区切りで複数の設定を読み込むことができます  
-\# 例(オプションはものすごく適当です)
+もしくは [MOVIE] に `画質名=ffmpegオプション` を、[SET] の quality に画質名をコンマ区切りで記述することで、複数の設定を読み込むことができます  
+
+* 例 (オプションはものすごく適当です)
 
     [SET]
     quality=720p,480p,360p
@@ -105,21 +131,20 @@ readex.exeのパス
     480p=-vcodec libvpx -b:v 1500k -quality realtime -cpu-used 2 -vf yadif=0:-1:1  -s 720x480 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
     360p=-vcodec libvpx -b:v 1200k -quality realtime -cpu-used 2 -vf yadif=0:-1:1  -s 640x360 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
 
-\# -iは指定する必要ありません  
-\# -fのオプションを必ず指定するようにしてくださいmp4かどうか判定しています  
-\# リアルタイム変換と画質が両立するようにビットレート-bと計算量-cpu-usedを調整する  
-\# オプションにてQSVなども有効なようです
-
+* -i を指定する必要はありません  
+* -f のオプションを必ず指定するようにしてください ( mp4 かどうかを判定しています)  
+* リアルタイム変換と画質が両立するようにビットレート -b と計算量 -cpu-used を調整してください  
+* オプションにて QSV なども有効なようです
 
 #### ライブラリ
-録画保存フォルダのビデオファイル(ts,mp4,webm等)を表示・再生します  
-Chrome系ブラウザでmp4を再生しようとするとエラーで再生できないことがありますが`-movflags faststart`オプションを付けエンコすることで再生できる場合が  
-また公開フォルダ外のファイルはスクリプトを経由するためシークできるブラウザとできないブラウザあるようです  
+録画保存フォルダのビデオファイル ( ts, mp4, webm 等)を表示・再生します  
+Chrome 系ブラウザで mp4 を再生しようとするとエラーで再生できないことがありますが、`-movflags faststart` オプションを付けエンコードすることで再生できる場合があります  
+また、公開フォルダ外のファイルはスクリプトを経由するため、シークできるブラウザとできないブラウザがあるようです  
 
-`LibraryPath=1`  
-ライブラリに表示するフォルダの読み込み設定を録画保存フォルダ(Common.ini)からHttpPublic.iniに変更します  
-\# Common.iniと同じ形式で指定してください  
-\# 例
+* `LibraryPath=1`  
+  * ライブラリに表示するフォルダを Common.ini 内に記載されている録画保存フォルダから HttpPublic.ini 内に記載されているフォルダに変更します
+  * Common.ini と同じ形式で指定してください
+  * 例
 
     [SET]
     LibraryPath=1
@@ -127,23 +152,22 @@ Chrome系ブラウザでmp4を再生しようとするとエラーで再生で�
     RecFolderPath0=C:\DTV
     RecFolderPath1=C:\hoge
 
-##### サムネ
-HttpPublicFolderのvideo\thumbsフォルダに`md5ハッシュ.jpg`があるとサムネを表示できます  
-ライブラリページのメニューから作成することができます
+##### サムネイル
+HttpPublicFolder の video\thumbs フォルダに `md5ハッシュ.jpg` があるとサムネを表示できます  
+ライブラリページのメニューからサムネイルを作成できます
 
 #### リモート視聴
-**EpgDataCap_Bon.exeの設定、SendTSTCP.dllが必要です**  
+**EpgDataCap_Bon.exe の設定と SendTSTCP.dll が必要です**  
 ※NwTV.ps1は使えなくなりました
 
-EpgDataCap_Bon.exeはNetworkTVモードで起動しています  
-NetworkTVモードを使用している場合は注意してください  
+EpgDataCap_Bon.exe は NetworkTVモード で起動しています  
+NetworkTV モードを使用している場合は注意してください  
 **音声が切り替わったタイミングで止まることがありますがその時は再読み込みしてください**
 
 ##### ファイル再生について
-* トランスコードするファイル(ts)もシークっぽい動作を可能にしました(offset(転送開始位置(99分率))を指定して再読み込み)  
-* 録画結果ページ  
-録画結果(GetRecFileInfo())からファイルパスを取得してます  
-リネームや移動していると再生することが出来ません
+* トランスコードするファイル (ts) もシークっぽい動作を可能にしました (offset(転送開始位置(99分率))を指定して再読み込み)  
+* 録画結果 (GetRecFileInfo()) からファイルパスを取得しています  
+  録画後にリネームやフォルダを移動していると再生することが出来ません
 
 
 ##### 放送中一覧

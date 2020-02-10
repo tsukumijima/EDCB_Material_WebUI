@@ -44,6 +44,7 @@ elseif post then
   --edcb.WritePrivateProfile('SET', 'tkntrec', GetVarInt(post,'tkntrec')==1,ini)
   edcb.WritePrivateProfile('SET', 'Roboto', GetVarInt(post,'Roboto')==1,ini)
   edcb.WritePrivateProfile('SET', 'subGenreoption', mg.get_var(post,'subGenreoption'),ini)
+  edcb.WritePrivateProfile('SET', 'FIND_BY_OPEN', GetVarInt(post,'FIND_BY_OPEN',0,100000),ini)
   edcb.WritePrivateProfile('SET', 'PAGE_COUNT', GetVarInt(post,'PAGE_COUNT',0,100000),ini)
 
   edcb.WritePrivateProfile('GUIDE', 'oneseg', GetVarInt(post,'oneseg')==1,ini)

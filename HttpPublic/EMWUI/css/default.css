@@ -508,6 +508,7 @@ h4 .mdl-button--icon {
 
 #error pre {
   margin: 8px 0 16px;
+  font-family: "BIZ UDゴシック", monospace;
   white-space: pre;
   word-wrap: normal;
   word-break: normal;
@@ -747,6 +748,8 @@ h4 .mdl-button--icon {
   .station img {
     height: 0.8em;
     vertical-align: baseline; }
+    .station .popup img {
+      height: 1em; }
   #tv-guide-main .station:last-child:before {
     top: 0;
     right: 0;
@@ -1031,6 +1034,8 @@ h4 .mdl-button--icon {
     padding: 16px 32px 0;
     overflow-x: hidden;
     overflow-y: auto; }
+    #sidePanel #ext {
+      letter-spacing: 0.02em;}
     #sidePanel .mdl-tabs__panel ul, #sidePanel .mdl-tabs__panel li {
       letter-spacing: 0.07em;
       line-height: 1.4em; }
