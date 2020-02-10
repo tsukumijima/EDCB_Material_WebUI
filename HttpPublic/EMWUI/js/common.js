@@ -1518,6 +1518,7 @@ $(function(){
 								$('.open.reserve').remove();
 								$('#sidePanel, .close_info.mdl-layout__obfuscator').removeClass('is-visible');
 							}
+							setTimeout('location.reload()', 2500); // リロードする
 						}else if (data.action == 'close'){
 							$('#actions').remove();
 							//window.close();
