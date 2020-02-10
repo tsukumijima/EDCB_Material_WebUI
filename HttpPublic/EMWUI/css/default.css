@@ -69,7 +69,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
 select {
   border: 1px solid rgba(0,0,0 ,0.12);
   width: 100%;
-  font-family: "Helvetica","Arial",sans-serif;
+  font-family: "Roboto","Helvetica","Arial",sans-serif;
   font-size: 16px;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -770,7 +770,7 @@ h4 .mdl-button--icon {
   .cell .mdl-typography--body-1-force-preferred-font {
     line-height: 1; }
   .cell .mdl-typography--caption-color-contrast {
-    font-family: monospace;
+    font-family: "Roboto","BIZ UDゴシック",monospace;
     word-break: break-all; }
   @media (pointer: fine) {
     .cell {
