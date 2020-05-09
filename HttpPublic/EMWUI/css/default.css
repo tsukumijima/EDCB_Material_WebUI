@@ -94,8 +94,12 @@ select {
     border: none;
     border-bottom: 1px solid rgba(0,0,0 ,0.12);
     padding: 4px 24px 4px 12px; }
-  select[multiple] {
-    padding: 8px 10px; }
+  select[multiple] option {
+    padding: 3.5px 12px; }
+    select[multiple] option:first-of-type {
+      padding-top: 8px; }
+    select[multiple] option:last-of-type {
+      padding-bottom: 8px; }
 
 
 dialog {
@@ -300,8 +304,6 @@ header {
       display: block !important;
       position: absolute;
       transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-    .search-box .mdl-textfield__expandable-holder {
-      width: 100%; }
     .search-box.is-focused,
     .search-box.is-dirty {
       width: calc(100% - 48px); }
@@ -402,6 +404,8 @@ header {
     .widemenu {
       width: 233px; } }
 
+.mdl-textfield__input {
+  box-sizing: border-box; }
 .mdl-menu__item .mdl-textfield {
   width: auto;
   padding: 8px 0; }
@@ -1164,8 +1168,6 @@ h4 .mdl-button--icon {
   .preset:not(:last-child) {
     margin-bottom: 8px!important; }
   @media (min-width: 480px) {
-    .mdl-grid.form .preset {
-      margin-left: 16px; }
     .preset>div>div.mdl-cell {
       width: calc(75% + 16px); }
     .preset>div>div.mdl-cell:first-child {
@@ -1206,6 +1208,9 @@ input[type=text] {
   padding: 4px 24px 4px 12px; }
   #search-bar input[type=text] {
     padding: 0; }  
+.mdl-textfield__label {
+  box-sizing: border-box;
+  padding: 0px 12px; }
 
 
 /* 時間絞り込み */
@@ -1266,7 +1271,7 @@ input[type=text] {
       #sidePanel #dateList {
         flex-wrap: wrap; }
     #dateList_select {
-      width: 160px; }
+      width: 175px; }
     #dateList_touch {
       width: 175px; }
     #dateList_edit {

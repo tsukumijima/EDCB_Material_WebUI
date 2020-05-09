@@ -517,7 +517,6 @@ function RecSettingTemplate(rs)
       s=s..'</select></div></div>\n'
         ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--middle">オプション</div>\n'
         ..'<div class="mdl-cell mdl-textfield mdl-js-textfield"><input class="has-icon mdl-textfield__input" type="text" name="recName" value="'..(recNameOp or '')..'" id="recName'..i..'" autocomplete="off"><label class="mdl-textfield__label" for="recName'..i..'">ファイル名オプション</label><i class="addmacro material-icons">add</i></div></div>\n'
-        ..'<input class="recFolderList" type=hidden name="recFolder" value="'..v.recFolder..'">'
         ..'</div>\n'
     end
   end
