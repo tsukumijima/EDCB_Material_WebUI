@@ -1,7 +1,7 @@
 EDCB Material WebUI
 ===================
 
-### 本家からの変更点
+## 本家からの変更点
 
 PWA 対応など、いくつかの改善を行っています
 
@@ -25,7 +25,7 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
 また、[Legacy WebUI](https://github.com/xtne6f/EDCB/tree/work-plus-s/ini/HttpPublic/legacy) をベースとして作成しています  
 おかげさまでド素人にも作成することができました、xtne6f 氏に感謝します
 
-### 使い方
+## 使い方
 
 1. 必要なファイルをダウンロードする ( EDCB の [releases](https://github.com/xtne6f/EDCB/releases) と [ffmpeg.zeranoe.com](https://ffmpeg.zeranoe.com/builds/) から)
    * CivetWeb が組み込まれた EDCB 一式 ([ xtne6f 氏](https://github.com/xtne6f/EDCB)の [work-plus-s-180529](https://github.com/xtne6f/EDCB/releases/tag/work-plus-s-180529) 以降)
@@ -78,7 +78,7 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
      * このフォークを使用する場合は、設定 → 全般 → 名前付きパイプを推測して開く をオンにすることでも同様の設定が行えます
 7. http://localhost:5510/EMWUI/ にアクセス出来たら準備完了です、設定を行いましょう
 
-### 設定
+## 設定
 基本的な設定は [設定ページ](http://localhost:5510/EMWUI/setting) にて行ってください  
 必要に応じて、設定ファイル (Setting\HttpPublic.ini) の \[SET\] 以下に以下のキー[=デフォルト]を指定してください  
 HttpPublic.ini は設定ページにて設定を保存すると作成されます
@@ -90,7 +90,7 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
   * 録画タグの候補を表示できるようになります  
   * カンマ区切りで指定してください
 
-#### テーマカラー
+### テーマカラー
 テーマカラーを変更することが出来ます  
 [Material Design Lite の customize](http://www.getmdl.io/customize/index.html) で色を選択、cssをダウンロードし material.min.css を置き換えます  
 もしくは設定ファイル (HttpPublic.ini) の CSS キーに下部に表示されている<LINK>タグを追加することでも可能です
@@ -100,7 +100,7 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
 * 色は [Material design](http://www.google.com/design/spec/style/color.html#color-color-palette) から選択することをお勧めします  
   * .mark の border は A700 を指定しています
 
-#### 再生機能
+### 再生機能
 **ffmpeg.exe、ffprobe.exe、readex.exeが必要です**  
 
 * `ffmpeg[=Tools\ffmpeg]`  
@@ -112,7 +112,7 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
 * `xprepare[=48128]`  
   * 転送開始前に変換しておく量(bytes)
 
-#### 画質設定 ( ffmpeg オプション)
+### 画質設定 ( ffmpeg オプション)
 * `mp4[=0]`  
   * デフォルトで mp4 にトランスコードする場合 1 に設定してください
 
@@ -137,7 +137,7 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
 * リアルタイム変換と画質が両立するようにビットレート -b と計算量 -cpu-used を調整してください  
 * オプションにて QSV なども有効なようです
 
-#### ライブラリ
+### ライブラリ
 録画保存フォルダのビデオファイル ( ts, mp4, webm 等)を表示・再生します  
 Chrome 系ブラウザで mp4 を再生しようとするとエラーで再生できないことがありますが、`-movflags faststart` オプションを付けエンコードすることで再生できる場合があります  
 また、公開フォルダ外のファイルはスクリプトを経由するため、シークできるブラウザとできないブラウザがあるようです  
@@ -153,11 +153,11 @@ Chrome 系ブラウザで mp4 を再生しようとするとエラーで再生�
         RecFolderPath0=C:\DTV
         RecFolderPath1=C:\hoge
 
-##### サムネイル
-* HttpPublicFolder の video\thumbs フォルダに `md5ハッシュ.jpg` があるとサムネを表示できます  
+### サムネイル
+* HttpPublicFolder の video\thumbs フォルダに `(md5ハッシュ).jpg` があるとサムネを表示できます  
 * ライブラリページのメニューからサムネイルを作成できます
 
-#### リモート視聴
+## リモート視聴
 **EpgDataCap_Bon.exe の設定と SendTSTCP.dll が必要です**  
 ※NwTV.ps1は使えなくなりました
 
@@ -165,18 +165,18 @@ Chrome 系ブラウザで mp4 を再生しようとするとエラーで再生�
 * NetworkTV モードを使用している場合は注意してください  
 * **音声が切り替わったタイミングで止まることがありますがその時は再読み込みしてください**
 
-##### ファイル再生について
+## ファイル再生について
 * トランスコードするファイル (ts) もシークっぽい動作を可能にしました (offset(転送開始位置(99分率))を指定して再読み込み)  
 * 録画結果 (GetRecFileInfo()) からファイルパスを取得しています  
   録画後にリネームやフォルダを移動していると再生することが出来ません
 
 
-##### 放送中一覧
+## 放送中一覧
 URL に `?webPanel=` を追加すると Vivaldi の WEB パネル向けのデザインになります  
 WEB パネルに追加して使ってみてください
 
 
-##### 局ロゴ
+## 局ロゴ
 
 局ロゴを表示できます
 
@@ -184,15 +184,15 @@ WEB パネルに追加して使ってみてください
 * TVTest の設定から「BMP形式のロゴを保存する」にチェックを入れ、予めロゴを取得しておいてください  
   * TVTest のフォルダは EDCB のフォルダと同じ階層にあることを想定しています  
   * LogoData.ini が見つからない場合は、公開フォルダ下の `img\logo\ONIDSID{.png|.bmp}` (4桁で16進数)を表示します  
-* TVTest のフォルダが想定と違う場合や LogoData.ini 、Logo フォルダの設定を変更している場合は設定ファイルにて指定してください  
+* TVTest のフォルダが想定と違う場合や LogoData.ini・Logo フォルダの設定を変更している場合は設定ファイルにて指定してください  
   * `LOGO_INI[=TVTestのフォルダ\LogoData.ini]`  
-  * LogoData.ini へのパスを指定する  
-* `LOGO_DIR[=TVTestのフォルダ\Logo]`  
-  * Logo フォルダへのパスを指定する  
+    * LogoData.ini へのパスを指定する  
+  * `LOGO_DIR[=TVTestのフォルダ\Logo]`  
+    * Logo フォルダへのパスを指定する  
 
-##### 番組表の隠しコマンド
+## 番組表の隠しコマンド
 
-以下を GET メゾットで取得します、URL に含めてください (例: epg.html?subch= ) 
+以下を GET メソッドで取得します、URL に含めてください (例: epg.html?subch= )  
 chcount と show は週間番組表では使用できません
 
 * `hour=整数`  
@@ -211,7 +211,7 @@ chcount と show は週間番組表では使用できません
   * サービス一覧でサブチャンネルを表示する  
   * 番組表だけでなくサービス一覧があるページで有効です (放送中・magnezio 等)
 
-### お知らせ機能
+## お知らせ機能
 登録した番組の開始30秒前にデスクトップ通知を行います  
 video フォルダに notification.mp3 を用意すると通知音が出ます  
 各自で用意してください
@@ -219,11 +219,11 @@ video フォルダに notification.mp3 を用意すると通知音が出ます
 * PC のみの機能です
 * Chrome では HTTPS 接続でないと通知が行えません (Chrome は HTTP 接続では通知の許可ダイヤログを表示できない)
 
-### 注意
+## 注意
 * チャンネルが増えたりしたら設定を保存しなおしてください (番組表に表示されません)
 * **スタンバイの機能を使うにはスクリプト (api/Common) のコメントアウトを解除する必要があります**  
 
-### 動作確認
+## 動作確認
 
 - Windows
   - Chrome
@@ -232,13 +232,13 @@ video フォルダに notification.mp3 を用意すると通知音が出ます
 - Android
   - Chrome
 
-### その他
+## その他
 **iOS 、スカパープレミアムの環境はありません。**  
 このプログラムを使用し不利益が生じても一切の責任を負いません  
 また改変・再配布などはご自由にどうぞ  
 バグ報告は詳細に、こちらに環境がない箇所の場合は特に、対処できません
 
-#### Framework & JavaScriptライブラリ
+## Framework & JavaScriptライブラリ
 
 * [Material Design Lite](http://www.getmdl.io)
 * [Material icons](https://design.google.com/icons/)
