@@ -303,7 +303,7 @@ if temp.video then
            '<div id="center"><i id="playprev" class="ctl-button material-icons">skip_previous</i><i id="play" class="ctl-button material-icons">play_arrow</i><i id="playnext" class="ctl-button material-icons">skip_next</i></div>\n' or '')..[=[
             <div id="titlebar" class="bar"></div>
             <div id="control" class="ext bar">
-              <div id="seek-container">]=]..(temp.video=='live' and '<div class="progress mdl-slider__container"><div id="seek" class="mdl-progress mdl-js-progress"></div></div>' or '<input class="mdl-slider mdl-js-slider" type="range" id="seek" min="0" max="99" value="0" step="0.01">')..'</div>\n'
+              <div id="seek-container">]=]..(temp.video=='live' and '<div class="progress mdl-slider__container"><div id="seek" class="mdl-progress mdl-js-progress"></div></div>' or '<input class="mdl-slider mdl-js-slider" type="range" id="seek" min="0" max="100" value="0" step="0.01">')..'</div>\n'
               ..(not sp and '<i id="playprev" class="ctl-button material-icons">skip_previous</i><i id="play" class="ctl-button material-icons">play_arrow</i><i id="playnext" class="ctl-button material-icons">skip_next</i>\n' or '')..[=[
               <div id="volume-wrap"><i id="volume-icon" class="ctl-button material-icons">volume_up</i>]=]..(not sp and '<p id="volume-container"><input class="mdl-slider mdl-js-slider" type="range" id="volume" min="0" max="1" value="0" step="0.01"></p>' or '')..[=[</div>
               <div class="Time-wrap"><span class="currentTime videoTime">0:00</span><span> / </span><span class="duration videoTime">0:00</span></div>
@@ -316,13 +316,14 @@ if temp.video then
                 ]=]..(not sp and '<li class="mdl-menu__item" id="rate"><span class="mdl-layout-spacer">速度</span><span><i class="material-icons">navigate_next</i></li>\n' or '')..[=[
               </ul>
               <ul class="mdl-menu mdl-menu--top-right mdl-js-menu" for="audio">
-                <li class="multi mdl-menu__item"><input type="radio" id="multi1" name="audio" class="audio" value="1"><label for="multi1" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="multi1">主音声</label></li>
-                <li class="multi mdl-menu__item"><input type="radio" id="multi2" name="audio" class="audio" value="2"><label for="multi2" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="multi2">副音声</label></li>
-                <li class="dual mdl-menu__item"><input type="radio" id="dual1" name="audio" class="audio" value="10"><label for="dual1" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="dual1">[二] 日本語</label></li>
-                <li class="dual mdl-menu__item"><input type="radio" id="dual2" name="audio" class="audio" value="11"><label for="dual2" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="dual2">[二] 英語</label></li>
-                <li class="dual mdl-menu__item"><input type="radio" id="RAW" name="audio" class="audio" value="100"><label for="RAW" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="RAW">RAW</label></li>
+                <li class="multi mdl-menu__item"><input type="radio" id="multi1" name="audio" class="audio" value="0"><label for="multi1" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="multi1">主音声</label></li>
+                <li class="multi mdl-menu__item"><input type="radio" id="multi2" name="audio" class="audio" value="1"><label for="multi2" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="multi2">副音声</label></li>
+                <li class="dual mdl-menu__item"><input type="radio" id="dual1" name="audio" class="audio" value="1"><label for="dual1" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="dual1">[二] 日本語</label></li>
+                <li class="dual mdl-menu__item"><input type="radio" id="dual2" name="audio" class="audio" value="2"><label for="dual2" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="dual2">[二] 英語</label></li>
+                <li class="dual mdl-menu__item"><input type="radio" id="RAW" name="audio" class="audio" value="0"><label for="RAW" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="RAW">RAW</label></li>
               </ul>
               <ul class="submenu mdl-menu mdl-menu--top-right mdl-js-menu" for="quality">
+                <li class="mdl-menu__item" id="menu_cinema"><label for="cinema" class="mdl-layout-spacer">逆テレシネ</label><span><label class="mdl-switch mdl-js-switch" for="cinema"><input type="checkbox" id="cinema" class="mdl-switch__input" value="1"></label></span></li>
 ]=])
   local list = edcb.GetPrivateProfile('set','quality','',ini)
   if list=='' then
@@ -400,7 +401,7 @@ function ConvertEpgInfoText2(onidOrEpg, tsidOrRecInfo, sid, eid)
     end
     s=s..'</span>\n'
       ..'<a class="notify_'..v.eid..' notification notify hidden mdl-button mdl-js-button mdl-button--icon" data-onid="'..v.onid..'" data-tsid="'..v.tsid..'" data-sid="'..v.sid..'" data-eid="'..v.eid..'" data-start="'..startTime..'" data-name="'..service_name..'"'..(startTime-30<=now and ' disabled' or '')..'><i class="material-icons">'..(startTime-30<=now and 'notifications' or 'add_alert')..'</i></a>'
-      ..ConvertSearch(v, service_name)..'</h4>\n'
+      ..SearchConverter.Convert(v, service_name)..'</h4>\n'
     if v.shortInfo then
       s=s..'<p>'..DecorateUri(v.shortInfo.text_char):gsub('\r?\n', '<br>\n')..'</p>\n'
     end
@@ -445,7 +446,8 @@ function ConvertEpgInfoText2(onidOrEpg, tsidOrRecInfo, sid, eid)
       ..'</ul></li>\n</ul>\n'
       ..'</section>\n'
   end
-  return s, {multi=#v.audioInfoList>=2, dual=v.audioInfoList[1].component_type==2}, End
+  local multi=v and v.audioInfoList and #v.audioInfoList>=2
+  return s, {multi=multi, dual=multi and v.audioInfoList[1].component_type==2}, End
 end
 
 --録画設定フォームのテンプレート
@@ -680,7 +682,7 @@ function SerchTemplate(si)
     ..'<div class="mdl-cell mdl-cell--6-col mdl-cell--9-col-desktop">\n'
     ..'<div class="has-button"><div class="multiple mdl-layout-spacer"><select id="service" name="serviceList" multiple size="5">'
 
-  NetworkList={}
+  local NetworkList={}
   for i,v in ipairs(NetworkIndex()) do
     NetworkList[i]=false
   end
@@ -864,15 +866,16 @@ function player(video, audio, xcode, live)
 ]=]..(not sp and '<li class="mdl-menu__item" id="rate"><span class="mdl-layout-spacer">速度</span><span><i class="material-icons">navigate_next</i></li>\n' or '')..[=[
 </ul><ul class="submenu mdl-menu mdl-menu--top-right mdl-js-menu" for="audio">
 ]=]..(audio.multi and [=[
-<li class="multi mdl-menu__item"><input type="radio" id="multi1" name="audio" class="audio" value="1" checked><label for="multi1" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="multi1">主音声</label></li>
-<li class="multi mdl-menu__item"><input type="radio" id="multi2" name="audio" class="audio" value="2"><label for="multi2" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="multi2">副音声</label></li>
+<li class="multi mdl-menu__item"><input type="radio" id="multi1" name="audio" class="audio" value="0" checked><label for="multi1" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="multi1">主音声</label></li>
+<li class="multi mdl-menu__item"><input type="radio" id="multi2" name="audio" class="audio" value="1"><label for="multi2" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="multi2">副音声</label></li>
 ]=] or '')..(audio.dual and [=[
-<li class="dual mdl-menu__item"><input type="radio" id="dual1" name="audio" class="audio" value="10" checked><label for="dual1" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="dual1">[二] 日本語</label></li>
-<li class="dual mdl-menu__item"><input type="radio" id="dual2" name="audio" class="audio" value="11"><label for="dual2" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="dual2">[二] 英語</label></li>
-<li class="dual mdl-menu__item"><input type="radio" id="RAW" name="audio" class="audio" value="100"><label for="RAW" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="RAW">[二] 日本語+英語</label></li>
+<li class="dual mdl-menu__item"><input type="radio" id="dual1" name="audio" class="audio" value="1" checked><label for="dual1" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="dual1">[二] 日本語</label></li>
+<li class="dual mdl-menu__item"><input type="radio" id="dual2" name="audio" class="audio" value="2"><label for="dual2" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="dual2">[二] 英語</label></li>
+<li class="dual mdl-menu__item"><input type="radio" id="RAW" name="audio" class="audio" value="0"><label for="RAW" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label class="m" for="RAW">[二] 日本語+英語</label></li>
 ]=] or '')..'</ul>'
   if not xcode then
     s=s..'<ul class="mdl-menu mdl-menu--top-right mdl-js-menu" for="quality">'
+      ..'<li class="mdl-menu__item" id="menu_cinema"><label for="cinema" class="mdl-layout-spacer">逆テレシネ</label><span><label class="mdl-switch mdl-js-switch" for="cinema"><input type="checkbox" id="cinema" class="mdl-switch__input" value="1"></label></span></li>'
     if list=='' then
       s=s..'<li class="mdl-menu__item"><input type="checkbox" id="HD" class="quality"><label for="HD" class="mdl-layout-spacer"><i class="material-icons">check</i></label><label for="HD"><i class="material-icons">hd</i></label></span></li>'
     else
@@ -920,9 +923,11 @@ function ConvertTitle(title)
 end
 
 --検索等のリンクを派生
-local authuser=edcb.GetPrivateProfile('CALENDAR','authuser','0',ini)
-local details=edcb.GetPrivateProfile('CALENDAR','details','%text_char%',ini)
-function ConvertSearch(v, service_name)
+SearchConverter={}
+SearchConverter.Convert=function(v, service_name)
+  local self=SearchConverter
+  self.authuser=self.authuser or edcb.GetPrivateProfile('CALENDAR','authuser','0',ini)
+  self.details=self.details or edcb.GetPrivateProfile('CALENDAR','details','%text_char%',ini)
   local title=mg.url_encode(v.shortInfo.event_name:gsub('＜.-＞', ''):gsub('【.-】', ''):gsub('%[.-%]', ''):gsub('（.-版）', '') or '')
   local startTime=os.time(v.startTime)
   local endTime=v.durationSecond and startTime+v.durationSecond or startTime
@@ -930,7 +935,7 @@ function ConvertSearch(v, service_name)
   return '<a class="mdl-button mdl-button--icon" href="search.html?andkey='..title..'"><i class="material-icons">search</i></a>'
     ..'<a class="mdl-button mdl-button--icon" href="https://www.google.co.jp/search?q='..title..'" target="_blank"><img class="material-icons" src="'..(ct.path or '')..'img/google.png" alt="Google検索"></a>'
     ..'<a class="mdl-button mdl-button--icon" href="https://www.google.co.jp/search?q='..title..'&amp;btnI=Im+Feeling+Lucky" target="_blank"><i class="material-icons">sentiment_satisfied</i></a>'
-    ..'<a class="mdl-button mdl-button--icon mdl-cell--hide-phone mdl-cell--hide-tablet" href="https://www.google.com/calendar/render?action=TEMPLATE&amp;text='..title..'&amp;location='..mg.url_encode(service_name)..'&amp;dates='..os.date('%Y%m%dT%H%M%S', startTime)..'/'..os.date('%Y%m%dT%H%M%S', endTime)..'&amp;details='..mg.url_encode(details:gsub('%%text_char%%', text_char):gsub('%%br%%', '\n') or '')..'&amp;authuser='..authuser..'" target="_blank"><i class="material-icons">event</i></a>'
+    ..'<a class="mdl-button mdl-button--icon mdl-cell--hide-phone mdl-cell--hide-tablet" href="https://www.google.com/calendar/render?action=TEMPLATE&amp;text='..title..'&amp;location='..mg.url_encode(service_name)..'&amp;dates='..os.date('%Y%m%dT%H%M%S', startTime)..'/'..os.date('%Y%m%dT%H%M%S', endTime)..'&amp;details='..mg.url_encode(self.details:gsub('%%text_char%%', text_char):gsub('%%br%%', '\n') or '')..'&amp;authuser='..self.authuser..'" target="_blank"><i class="material-icons">event</i></a>'
 end
 
 function RecModeTextList()
@@ -976,7 +981,7 @@ function CustomServiceList()
     ['4-16626-202']=true, --スターチャンネル3
   }
 
-  function SubChanel(a,b)
+  local function SubChanel(a,b)
     return not subch and SubChConcat and not NOT_SUBCH[a.onid..'-'..a.tsid..'-'..a.sid] and b and a.onid==b.onid and a.tsid==b.tsid
   end
 
@@ -1009,7 +1014,7 @@ function CustomServiceList()
       end
     end
   else
-    epgCapFlag={}
+    local epgCapFlag={}
     for i,v in ipairs(edcb.GetChDataList()) do
       epgCapFlag[v.onid..'-'..v.tsid..'-'..v.sid]=v.epgCapFlag
     end
@@ -1084,8 +1089,8 @@ end
 function UserAgentSP()
   for hk,hv in pairs(mg.request_info.http_headers) do
     if hk:lower()=='user-agent' then
-      for i,v in ipairs({'Android','iPhone','iPad'}) do
-        if hv:match(v) then
+      for i,v in ipairs({'android','iphone','ipad'}) do
+        if hv:lower():match(v) then
           return true
         end
       end

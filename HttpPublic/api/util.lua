@@ -110,16 +110,16 @@ function getSearchKey(post)
   }
   if mg.get_var(post, 'contentList') then
     for i=0,10000 do
-      v=mg.get_var(post, 'contentList', i)
+      local v=mg.get_var(post, 'contentList', i)
       if not v then break end
       table.insert(key.contentList, {content_nibble=tonumber(v)})
     end
   end
   if mg.get_var(post, 'serviceList') then
     for i=0,10000 do
-      v=mg.get_var(post, 'serviceList', i)
+      local v=mg.get_var(post, 'serviceList', i)
       if not v then break end
-      m={string.match(v, '^(%d+)%-(%d+)%-(%d+)$')}
+      local m={string.match(v, '^(%d+)%-(%d+)%-(%d+)$')}
       if #m==3 then
         table.insert(key.serviceList, {onid=0+m[1], tsid=0+m[2], sid=0+m[3]})
       end
@@ -133,9 +133,9 @@ function getSearchKey(post)
   end
   if mg.get_var(post, 'dateList') then
     for v in (mg.get_var(post,'dateList') or ''):gmatch('[^,]+') do
-      m={string.match(v, '^(.-)%-(%d+):(%d+)%-(.-)%-(%d+):(%d+)$')}
+      local m={string.match(v, '^(.-)%-(%d+):(%d+)%-(.-)%-(%d+):(%d+)$')}
       if #m==6 then
-        dateInfo={
+        local dateInfo={
           startDayOfWeek=({['日']=0,['月']=1,['火']=2,['水']=3,['木']=4,['金']=5,['土']=6})[m[1]],
           endDayOfWeek=({['日']=0,['月']=1,['火']=2,['水']=3,['木']=4,['金']=5,['土']=6})[m[4]]
         }
@@ -242,6 +242,20 @@ function Response(code,ctype,charset,cl)
     ..(mg.keep_alive(not not cl) and '\r\n' or '\r\nConnection: close\r\n')
 end
 
+-- ios判定
+function Check_iOS()
+  for hk,hv in pairs(mg.request_info.http_headers) do
+    if hk:lower()=='user-agent' then
+      for i,v in ipairs({'iphone','ipad','macintosh'}) do
+        if hv:lower():match(v) then
+          return true
+        end
+      end
+      break
+    end
+  end
+end
+
 --ライブラリに表示するフォルダのリストを取得する
 function GetLibraryPathList()
   local list={}
@@ -290,8 +304,8 @@ function GetDurationSec(f,fpath)
   local fsize=f:seek('end') or 0
   --ffprobeを使う(正確になるはず)
   if fpath then
-    local dir=edcb.GetPrivateProfile('SET', 'ModulePath', '', 'Common.ini')..'\\Tools\\'
-    local ffprobe=edcb.GetPrivateProfile('SET','ffprobe',dir..'ffprobe.exe',ini)
+    local tools=edcb.GetPrivateProfile('SET', 'ModulePath', '', 'Common.ini')..'\\Tools\\'
+    local ffprobe=edcb.GetPrivateProfile('SET','ffprobe',tools..'ffprobe.exe',ini)
     local ff=edcb.FindFile and edcb.FindFile(ffprobe, 1)
     if ff then
       local dur=tonumber(edcb.io.popen('""'..ffprobe..'" -i "'..fpath..'" -v quiet -show_entries format=duration -of ini  2>&1"', 'rb'):read('*a'):match('=(.+)\r\n'))
