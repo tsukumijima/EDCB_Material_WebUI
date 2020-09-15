@@ -28,10 +28,10 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
 ## 使い方
 
 1. 必要なファイルをダウンロードする ( EDCB の [releases](https://github.com/xtne6f/EDCB/releases) と [ffmpeg.zeranoe.com](https://ffmpeg.zeranoe.com/builds/) から)
-   * CivetWeb が組み込まれた EDCB 一式 ([ xtne6f 氏](https://github.com/xtne6f/EDCB)の [work-plus-s-180529](https://github.com/xtne6f/EDCB/releases/tag/work-plus-s-180529) 以降)
+   * CivetWeb が組み込まれた EDCB 一式 ([ xtne6f 氏](https://github.com/xtne6f/EDCB) の [work-plus-s-180529](https://github.com/xtne6f/EDCB/releases/tag/work-plus-s-180529) 以降)
    * lua52.dll … (WebUI の表示に使用します)
-   * ffmpeg.exe … (再生機能に使用します)
-   * ffprobe.exe … (再生機能に使用します・ffmpeg に同梱)
+   * ffmpeg.exe … (再生機能に使用します / 4.2 以降は [字幕関連に問題がある](https://github.com/EMWUI/EDCB_Material_WebUI/issues/17#issuecomment-692421720) ため 4.1.4 以下を推奨)
+   * ffprobe.exe … (再生機能に使用します・FFmpeg に同梱)
    * readex.exe … (再生機能に使用します)
 2. EDCB 同梱の Readme_Mod.txt の [*Civetwebの組み込みについて*](https://github.com/xtne6f/EDCB/blob/24efede96ae3c856c6419ee89b8fec6eeee8f8b6/Document/Readme_Mod.txt#L556-L660) をよく読む
    * Web サーバー周りの設定は全てこの項目に記載されています
