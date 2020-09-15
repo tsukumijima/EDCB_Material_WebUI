@@ -134,10 +134,6 @@ ct.main=ct.main..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-sp
   ..'<div><label for="Roboto" class="mdl-switch mdl-js-switch"><input id="Roboto" type="checkbox" class="mdl-switch__input" name="Roboto" value="1"'..(Roboto and ' checked' or '')..'><span class="mdl-switch__label"></span></label></div>\n'
   ..'<span class="mdl-tooltip" for="tt-Roboto">Material Design推奨フォント</span></div>\n'
 
-  ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle"><span id="tt-findbyopen">名前付きパイプを推測して開く</span></div><div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
-  ..'<div><label for="findbyopen" class="mdl-switch mdl-js-switch"><input id="findbyopen" type="checkbox" class="mdl-switch__input" name="FIND_BY_OPEN" value="1"'..(Roboto and ' checked' or '')..'><span class="mdl-switch__label"></span></label></div>\n'
-  ..'<span class="mdl-tooltip" for="tt-findbyopen">一部の環境でリモート視聴が動作しない場合にオンにしてください</span></div>\n'
-
   ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle"><span id="tt-count">一覧表示数</span></div>\n<div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
   ..'<div class="number"><div class="mdl-textfield mdl-js-textfield"><input class="mdl-textfield__input" type="number" name="PAGE_COUNT" value="'..PAGE_COUNT..'" min="0" id="PAGE_COUNT"><label class="mdl-textfield__label" for="PAGE_COUNT"></label><span class="mdl-textfield__error">Input is not a number!</span></div></div>\n'
   ..'<span class="mdl-tooltip" for="tt-count">0で無制限</span></div>\n'
@@ -211,8 +207,9 @@ ct.main=ct.main..'</div></div>\n'
   ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--2-col mdl-cell--3-col-desktop mdl-cell--middle">出力バッファの量</div>\n<div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
   ..'<div class="number textfield-container"><div class="text-right mdl-textfield mdl-js-textfield"><input class="mdl-textfield__input" type="number" name="XBUF" value="'..XBUF..'" min="0" id="XBUF"><label class="mdl-textfield__label" for="XBUF"></label></div>bytes</div></div>\n'
 
-  ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle">名前付きパイプを予想して開く</div>\n<div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
+  ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle"><span id="tt-findbyopen">名前付きパイプを予想して開く</span></div>\n<div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
   ..'<div><label for="FIND_BY_OPEN" class="mdl-switch mdl-js-switch"><input id="FIND_BY_OPEN" type="checkbox" class="mdl-switch__input" name="FIND_BY_OPEN" value="1"'..(FIND_BY_OPEN and ' checked' or '')..'><span class="mdl-switch__label"></span></label></div>\n'
+  ..'<span class="mdl-tooltip" for="tt-findbyopen">一部の環境でリモート視聴が動作しない場合にオンにしてください</span>\n'
   ..'</div></div></div>\n'
 
   ..'</section>\n'
