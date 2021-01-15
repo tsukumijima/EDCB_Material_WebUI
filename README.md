@@ -33,6 +33,7 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
    * ffmpeg.exe … (再生機能に使用します / 4.2 以降は [字幕関連に問題がある](https://github.com/EMWUI/EDCB_Material_WebUI/issues/17#issuecomment-692421720) ため 4.1.4 以下を推奨)
    * ffprobe.exe … (再生機能に使用します・FFmpeg に同梱)
    * readex.exe … (再生機能に使用します)
+   * asyncbuf.exe … (再生機能に使用します)
 2. EDCB 同梱の Readme_Mod.txt の [*Civetwebの組み込みについて*](https://github.com/xtne6f/EDCB/blob/24efede96ae3c856c6419ee89b8fec6eeee8f8b6/Document/Readme_Mod.txt#L556-L660) をよく読む
    * Web サーバー周りの設定は全てこの項目に記載されています
 3. EDCB の HTTP サーバ機能を有効化し、アクセス制御を設定する
@@ -101,7 +102,7 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
   * .mark の border は A700 を指定しています
 
 ### 再生機能
-**ffmpeg.exe、ffprobe.exe、readex.exeが必要です**  
+**ffmpeg.exe・ffprobe.exe・readex.exe・asyncbuf.exe が必要です**  
 
 * `ffmpeg[=Tools\ffmpeg]`  
   * ffmpeg.exe のパスを指定します
@@ -109,8 +110,15 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
   * ffprobe.exeのパス
 * `readex[=Tools\readex]`  
   * readex.exeのパス
+* `asyncbuf[=Tools\asyncbuf.exe]`  
+  * asyncbuf.exeのパス
+  * 出力バッファの量 (xbuf) を指定した場合に必要になります
+  * 変換負荷や通信のむらを吸収します
+* `xbuf[=0]`  
+  * 出力バッファの量 (bytes)
+  * asyncbuf.exe を用意すること。変換負荷や通信のむらを吸収する
 * `xprepare[=48128]`  
-  * 転送開始前に変換しておく量(bytes)
+  * 転送開始前に変換しておく量 (bytes)
 
 ### 画質設定 ( ffmpeg オプション)
 * `mp4[=0]`  
@@ -133,6 +141,7 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
     360p=-vcodec libvpx -b:v 1200k -quality realtime -cpu-used 2 $FILTER -s 640x360 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
     NVENC=-vcodec h264_nvenc -profile:v main -level 31 -b:v 1408k -maxrate 8M -bufsize 8M -preset medium -g 120 $FILTER -s 1280x720 -acodec aac -ab 128k -f mp4 -movflags frag_keyframe+empty_moov -
 
+* **$FILTER はフィルタオプション (インタレ解除:-vf yadif=0:-1:1 逆テレシネ:-vf pullup -r 24000/1001) に置換します**
 * -i を指定する必要はありません  
 * -f のオプションを必ず指定するようにしてください ( mp4 かどうかを判定しています)  
 * リアルタイム変換と画質が両立するようにビットレート -b と計算量 -cpu-used を調整してください  
@@ -159,12 +168,11 @@ Chrome 系ブラウザで mp4 を再生しようとするとエラーで再生�
 * ライブラリページのメニューからサムネイルを作成できます
 
 ## リモート視聴
-**EpgDataCap_Bon.exe の設定と SendTSTCP.dll が必要です**  
-※NwTV.ps1は使えなくなりました
+**EpgDataCap_Bon.exe の設定と SendTSTCP.dll が必要です**
 
 * EpgDataCap_Bon.exe は NetworkTVモード で起動しています  
 * NetworkTV モードを使用している場合は注意してください  
-* **音声が切り替わったタイミングで止まることがありますがその時は再読み込みしてください**
+* **音声が切り替わったタイミングで止まることがありますが、その時は再読み込みしてください**
 
 ## ファイル再生について
 * トランスコードするファイル (ts) もシークっぽい動作を可能にしました (offset(転送開始位置(99分率))を指定して再読み込み)  
