@@ -1,7 +1,7 @@
 {
     "name": "EpgTimer",
     "short_name": "EpgTimer",
-    "start_url": "/EMWUI/epg.html",
+    "start_url": "./epg.html",
     "scope": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
@@ -12,17 +12,17 @@
     "prefer_related_applications": false,
     "icons": [
       {
-        "src": "/EMWUI/img/EpgTimer-192x192.png",
+        "src": "./img/EpgTimer-192x192.png",
         "type": "image/png",
         "sizes": "192x192"
       },
       {
-        "src": "/EMWUI/img/EpgTimer-256x256.png",
+        "src": "./img/EpgTimer-256x256.png",
         "type": "image/png",
         "sizes": "256x256"
       },
       {
-        "src": "/EMWUI/img/EpgTimer-512x512.png",
+        "src": "./img/EpgTimer-512x512.png",
         "type": "image/png",
         "sizes": "512x512"
       }
