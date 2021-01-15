@@ -119,7 +119,7 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
 以下のような設定を書き込むとデフォルトと以下で指定した設定を読み込めるようになります
 
     [MOVIE]
-    HD=-vcodec libvpx -b 1800k -quality realtime -cpu-used 2 -vf yadif=0:-1:1  -s 960x540 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
+    HD=-vcodec libvpx -b 1800k -quality realtime -cpu-used 2 $FILTER -s 960x540 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
 
 もしくは [MOVIE] に `画質名=ffmpegオプション` を、[SET] の quality に画質名をコンマ区切りで記述することで、複数の設定を読み込むことができます  
 
@@ -128,9 +128,10 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
     [SET]
     quality=720p,480p,360p
     [MOVIE]
-    720p=-vcodec libvpx -b:v 1800k -quality realtime -cpu-used 2 -vf yadif=0:-1:1  -s 1280x720 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
-    480p=-vcodec libvpx -b:v 1500k -quality realtime -cpu-used 2 -vf yadif=0:-1:1  -s 720x480 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
-    360p=-vcodec libvpx -b:v 1200k -quality realtime -cpu-used 2 -vf yadif=0:-1:1  -s 640x360 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
+    720p=-vcodec libvpx -b:v 1800k -quality realtime -cpu-used 2 $FILTER -s 1280x720 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
+    480p=-vcodec libvpx -b:v 1500k -quality realtime -cpu-used 2 $FILTER -s 720x480 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
+    360p=-vcodec libvpx -b:v 1200k -quality realtime -cpu-used 2 $FILTER -s 640x360 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
+    NVENC=-vcodec h264_nvenc -profile:v main -level 31 -b:v 1408k -maxrate 8M -bufsize 8M -preset medium -g 120 $FILTER -s 1280x720 -acodec aac -ab 128k -f mp4 -movflags frag_keyframe+empty_moov -
 
 * -i を指定する必要はありません  
 * -f のオプションを必ず指定するようにしてください ( mp4 かどうかを判定しています)  
