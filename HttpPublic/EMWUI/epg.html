@@ -151,6 +151,7 @@ if minTime then
     ..'<div id="date" class="pulldown navigation__item mdl-color-text--primary">'..Date.month..'/'..Date.day..'('..({'日','月','火','水','木','金','土'})[Date.wday]..')'..'</div>\n'
     ..'<div class="dividers navigation__item navigation__icon left_no_pad"><a class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" '..next..'><i class="material-icons">chevron_right</i></a></div>\n'
 
+  --[[
   ct.menu=ct.menu..'<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu" for="date">\n'
     ..'<li><div class="mdl-menu__item"><form id="date_input" action="epg.html">'
     ..(tab~=0 and '<input type="hidden" name="tab" value="'..tab..'">' or '')
@@ -160,6 +161,8 @@ if minTime then
     ..(CH_COUNT~=DEF_CH_COUNT and '<input type="hidden" name="chcount" value="'..CH_COUNT..'">' or '')
     ..(interval~=DEF_interval and '<input type="hidden" name="interval" value="'..interval..'">' or '')
     ..'</form></div></li>\n'
+  --]]
+  ct.menu=ct.menu..'<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu" for="date">\n'
 
   minTime=math.min(math.max(minTime, minTime_-1*24*3600)+timezone, math.max(minTime+timezone, pageTime-2*24*3600))
   maxTime=math.min(maxTime+timezone, minTime+9*24*3600) -- 10日間
