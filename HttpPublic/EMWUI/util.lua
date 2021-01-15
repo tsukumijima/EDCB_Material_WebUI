@@ -7,8 +7,9 @@ ini='Setting\\HttpPublic.ini'
 sidePanel=tonumber(edcb.GetPrivateProfile('GUIDE','sidePanel',true,ini))~=0
 
 function template(temp)
+  edcb.htmlEscape=0
   local Roboto=tonumber(edcb.GetPrivateProfile('SET','Roboto',false,ini))~=0
-  local css=edcb.GetPrivateProfile('SET','css',false,ini)
+  local css=edcb.GetPrivateProfile('SET','css','',ini)
   local path = temp.path or ''
   local s=CreateContentBuilder(GZIP_THRESHOLD_BYTE)
   s:Append([=[
@@ -24,7 +25,7 @@ function template(temp)
 <link rel="manifest" href="]=]..path..[=[manifest.json">
 <link rel="manifest" href="]=]..path..[=[manifest.webmanifest">
 ]=]
-..(not css==0 and css or '<link rel="stylesheet" href="'..path..'css/material.min.css">')..'\n'
+..(css~='' and css or '<link rel="stylesheet" href="'..path..'css/material.min.css">')..'\n'
 ..((temp.dialog or temp.progres) and '<link rel="stylesheet" href="'..path..'css/dialog-polyfill.css">\n' or '')..[=[
 <link rel="stylesheet" href="]=]..path..[=[css/default.css">
 <link rel="stylesheet" href="]=]..path..[=[css/user.css">
