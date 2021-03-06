@@ -29,11 +29,11 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
 
 1. 必要なファイルをダウンロードする ( EDCB の [releases](https://github.com/xtne6f/EDCB/releases) と [ffmpeg.zeranoe.com](https://ffmpeg.zeranoe.com/builds/) から)
    * CivetWeb が組み込まれた EDCB 一式 ([ xtne6f 氏](https://github.com/xtne6f/EDCB) の [work-plus-s-180529](https://github.com/xtne6f/EDCB/releases/tag/work-plus-s-180529) 以降)
-   * lua52.dll … (WebUI の表示に使用します)
-   * ffmpeg.exe … (再生機能に使用します / 4.2 以降は [字幕関連に問題がある](https://github.com/EMWUI/EDCB_Material_WebUI/issues/17#issuecomment-692421720) ため 4.1.4 以下を推奨)
-   * ffprobe.exe … (再生機能に使用します・FFmpeg に同梱)
-   * readex.exe … (再生機能に使用します)
-   * asyncbuf.exe … (再生機能に使用します)
+   * lua52.dll … WebUI の表示に使用します
+   * ffmpeg.exe … 再生機能に使用します / 4.2 以降は [字幕関連に問題がある](https://github.com/EMWUI/EDCB_Material_WebUI/issues/17#issuecomment-692421720) ため 4.1.4 以下を推奨
+   * ffprobe.exe … 再生機能に使用します・FFmpeg に同梱
+   * readex.exe … 再生機能に使用します
+   * asyncbuf.exe … 再生機能に使用します
 2. EDCB 同梱の Readme_Mod.txt の [*Civetwebの組み込みについて*](https://github.com/xtne6f/EDCB/blob/24efede96ae3c856c6419ee89b8fec6eeee8f8b6/Document/Readme_Mod.txt#L556-L660) をよく読む
    * Web サーバー周りの設定は全てこの項目に記載されています
 3. EDCB の HTTP サーバ機能を有効化し、アクセス制御を設定する
@@ -57,8 +57,8 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
             │   ├─ api/ ＊
             │   ├─ EMWUI/
             │   ├─ legacy/
-            │   ├─ img/ *
-            │   │   └logo/ *
+            │   ├─ img/ ＊
+            │   │   └logo/ ＊
             │   └─ video/ ＊
             ├─ Tools/
             │   ├─ ffmpeg.exe
@@ -97,8 +97,10 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
 ### テーマカラー
 テーマカラーを変更することが出来ます  
 [Material Design Lite の customize](http://www.getmdl.io/customize/index.html) で色を選択、cssをダウンロードし material.min.css を置き換えます  
-もしくは設定ファイル (HttpPublic.ini) の CSS キーに下部に表示されている<LINK>タグを追加することでも可能です
-\# 例`css=<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-pink.min.css" />`  
+もしくは設定ファイル (HttpPublic.ini) の CSS キーに下部に表示されている \<LINK\> タグを追加することでも可能です
+
+\# 例：`css=<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue_grey-pink.min.css" />`  
+
 * 一部 ( border 周り) が置き換えただけでは対応できない部分があります (.mark)
   * 気になる方は css を user.css に記述してください  
 * 色は [Material design](http://www.google.com/design/spec/style/color.html#color-color-palette) から選択することをお勧めします  
@@ -192,15 +194,16 @@ WEB パネルに追加して使ってみてください
 
 局ロゴを表示できます
 
-* TVTest の局ロゴを使用します  
-* TVTest の設定から「BMP形式のロゴを保存する」にチェックを入れ、予めロゴを取得しておいてください  
-  * TVTest のフォルダは EDCB のフォルダと同じ階層にあることを想定しています  
-  * LogoData.ini が見つからない場合は、公開フォルダ下の `img\logo\ONIDSID{.png|.bmp}` (4桁で16進数)を表示します  
-* TVTest のフォルダが想定と違う場合や LogoData.ini・Logo フォルダの設定を変更している場合は設定ファイルにて指定してください  
-  * `LOGO_INI[=TVTestのフォルダ\LogoData.ini]`  
-    * LogoData.ini へのパスを指定する  
-  * `LOGO_DIR[=TVTestのフォルダ\Logo]`  
-    * Logo フォルダへのパスを指定する  
+* EDCB で取得した局ロゴを使用します  
+* ロゴフォルダに局ロゴがない場合のみ、TVTest の局ロゴを使用します  
+  * TVTest の設定から「BMP形式のロゴを保存する」にチェックを入れ、予めロゴを取得しておいてください  
+    * TVTest のフォルダは EDCB のフォルダと同じ階層にあることを想定しています  
+    * LogoData.ini が見つからない場合は、公開フォルダ下の `img\logo\ONIDSID{.png|.bmp}` (4桁で16進数)を表示します  
+  * TVTest のフォルダが想定と異なる場合や LogoData.ini・Logo フォルダの設定を変更している場合は設定ファイルにて指定してください  
+    * `LOGO_INI[=TVTestのフォルダ\LogoData.ini]`  
+      * LogoData.ini へのパスを指定する  
+    * `LOGO_DIR[=TVTestのフォルダ\Logo]`  
+      * Logo フォルダへのパスを指定する  
 
 ## 番組表の隠しコマンド
 
