@@ -176,6 +176,8 @@ dialog {
   h4 .mark {
     font-size: 15px;
     bottom: 2px; }
+  .custom .sub_cont .mark {
+    margin: 6px; }
 
 
 /*録画中ボタン*/
@@ -759,7 +761,7 @@ h4 .mdl-button--icon {
           flex-shrink: 0;
   position: relative;
   box-sizing: border-box; }
-  .station img {
+  .station>img {
     height: 0.8em;
     vertical-align: baseline; }
     .station .popup img {
@@ -816,6 +818,7 @@ h4 .mdl-button--icon {
   border-radius: 2px;
   box-sizing: border-box; }
 .content {
+  --width: 18px;
   width: 100%;
   max-height: 100%;
   color: rgba(0,0,0 ,0.87);
@@ -841,10 +844,15 @@ h4 .mdl-button--icon {
   .sub_cont {
     float: left; }
   .main_cont {
-    width: calc(100% - 18px); }
+    width: calc(100% - var(--width)); }
+  .custom .content {
+    --width: 29px;}
+  .custom img {
+    width: 25px;
+    padding: 0 2px 0; }
 
 .startTime {
-  width: 18px;
+  width: var(--width);
   text-align: center; }
 
 .popup {
@@ -866,6 +874,8 @@ h4 .mdl-button--icon {
 .notify_icon .material-icons {
   margin-left: 1px;
   font-size: 16px; }
+  .custom .notify_icon .material-icons {
+    margin-left: 6px; }
 
 .t4,.t5 {
   background: #0277BD; }
