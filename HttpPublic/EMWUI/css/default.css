@@ -1,4 +1,26 @@
-﻿@media (pointer: fine) {
+﻿
+html, body, .mdl-textfield__input {
+  font-family: "Roboto","Helvetica","Arial",sans-serif !important; }
+
+*:focus {
+  outline: none; }
+
+.mdl-layout__header,
+.mdl-layout__header .mdl-layout__drawer-button,
+.mdl-layout__header-row .mdl-navigation__link,
+.mdl-layout__tab,
+.mdl-layout.is-upgraded .mdl-layout__tab.is-active,
+.mdl-layout__tab-bar-button.is-active,
+.mdl-color-text--accent-contrast,
+.mdl-color-text--primary-contrast {
+  color: #FFFFFF !important; }
+
+#seek-container .mdl-slider.is-upgraded::-webkit-slider-thumb {
+  background: #FF4081; }
+#seek-container .mdl-slider.is-upgraded::-moz-range-thumb {
+  background: #FF4081; }
+
+@media (pointer: fine) {
   * {
     scrollbar-width: thin; }
   ::-webkit-scrollbar {
