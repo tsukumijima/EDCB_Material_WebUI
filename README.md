@@ -10,6 +10,7 @@ PWA 対応など、いくつかの改善を行っています
 * 録画設定から録画保存フォルダを指定できるようにした
 * EPG予約・録画結果画面でサイドパネルから予約・結果を削除できるようにした
 * 余白が足りない部分などのスタイルを修正し、より見やすくした
+* CSS テーマの切り替えがうまく適用されない不具合を修正した
 * <s>FIND_BY_OPEN（名前付きパイプが見つからないときにパイプ名を推測して開くフラグ）を設定画面から設定できるようにした</s>（本家に取り込まれました）
 * 本家の README がお世辞にもわかりやすいとは言い難い上誤字脱字が多かったので、（勝手に）加筆修正した
 
@@ -27,14 +28,14 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
 
 ## 使い方
 
-1. 必要なファイルをダウンロードする ( EDCB の [releases](https://github.com/xtne6f/EDCB/releases) と [ffmpeg.zeranoe.com](https://ffmpeg.zeranoe.com/builds/) から)
+1. 必要なファイルをダウンロードする ( EDCB の [releases](https://github.com/xtne6f/EDCB/releases) と [ffmpeg.zeranoe.com のアーカイブ](https://web.archive.org/web/20200919011114mp_/https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-4.1.4-win64-static.zip) から)
    * CivetWeb が組み込まれた EDCB 一式 ([ xtne6f 氏](https://github.com/xtne6f/EDCB) の [work-plus-s-180529](https://github.com/xtne6f/EDCB/releases/tag/work-plus-s-180529) 以降)
    * lua52.dll … WebUI の表示に使用します
    * ffmpeg.exe … 再生機能に使用します / 4.2 以降は [字幕関連に問題がある](https://github.com/EMWUI/EDCB_Material_WebUI/issues/17#issuecomment-692421720) ため 4.1.4 以下を推奨
    * ffprobe.exe … 再生機能に使用します・FFmpeg に同梱
-   * readex.exe … 再生機能に使用します
+   * tsreadex.exe … 再生機能に使用します
    * asyncbuf.exe … 再生機能に使用します
-2. EDCB 同梱の Readme_Mod.txt の [*Civetwebの組み込みについて*](https://github.com/xtne6f/EDCB/blob/24efede96ae3c856c6419ee89b8fec6eeee8f8b6/Document/Readme_Mod.txt#L556-L660) をよく読む
+2. EDCB 同梱の Readme_Mod.txt の [*CivetWeb の組み込みについて*](https://github.com/xtne6f/EDCB/blob/24efede96ae3c856c6419ee89b8fec6eeee8f8b6/Document/Readme_Mod.txt#L556-L660) をよく読む
    * Web サーバー周りの設定は全てこの項目に記載されています
 3. EDCB の HTTP サーバ機能を有効化し、アクセス制御を設定する
    * EpgTimerSrv.ini に以下を追記するか、tkntrec 版の EpgTimer であれば EpgTimer の設定 → 基本設定 → ネットワーク → Httpサーバ から設定できます
@@ -63,7 +64,8 @@ EDCB_Material_WebUI を開発してくださった EMWUI さんに感謝しま�
             ├─ Tools/
             │   ├─ ffmpeg.exe
             │   ├─ ffprobe.exe
-            │   └─ readex.exe
+            │   └─ tsreadex.exe
+            │   └─ asyncbuf.exe
             ├─ EpgDataCap_Bon.exe ＊
             ├─ EpgTimerSrv.exe ＊
             ├─ EpgTimer.exe ＊
@@ -107,14 +109,14 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
   * .mark の border は A700 を指定しています
 
 ### 再生機能
-**ffmpeg.exe・ffprobe.exe・readex.exe・asyncbuf.exe が必要です**  
+**ffmpeg.exe・ffprobe.exe・tsreadex.exe・asyncbuf.exe が必要です**  
 
-* `ffmpeg[=Tools\ffmpeg]`  
+* `ffmpeg[=Tools\ffmpeg.exe]`  
   * ffmpeg.exe のパスを指定します
-* `ffprobe[=Tools\ffprobe]`  
+* `ffprobe[=Tools\ffprobe.exe]`  
   * ffprobe.exeのパス
-* `readex[=Tools\readex]`  
-  * readex.exeのパス
+* `tsreadex[=Tools\tsreadex.exe]`  
+  * tsreadex.exeのパス
 * `asyncbuf[=Tools\asyncbuf.exe]`  
   * asyncbuf.exeのパス
   * 出力バッファの量 (xbuf) を指定した場合に必要になります
@@ -146,7 +148,7 @@ HttpPublic.ini は設定ページにて設定を保存すると作成されま�
     360p=-vcodec libvpx -b:v 1200k -quality realtime -cpu-used 2 $FILTER -s 640x360 -r 30000/1001 -acodec libvorbis -ab 128k -f webm -
     NVENC=-vcodec h264_nvenc -profile:v main -level 31 -b:v 1408k -maxrate 8M -bufsize 8M -preset medium -g 120 $FILTER -s 1280x720 -acodec aac -ab 128k -f mp4 -movflags frag_keyframe+empty_moov -
 
-* **$FILTER はフィルタオプション (インタレ解除:-vf yadif=0:-1:1 逆テレシネ:-vf pullup -r 24000/1001) に置換します**
+* **$FILTER はフィルタオプション (インタレ解除: `-vf yadif=0:-1:1` 逆テレシネ: `-vf pullup -r 24000/1001`) に置換します**
 * -i を指定する必要はありません  
 * -f のオプションを必ず指定するようにしてください ( mp4 かどうかを判定しています)  
 * リアルタイム変換と画質が両立するようにビットレート -b と計算量 -cpu-used を調整してください  
