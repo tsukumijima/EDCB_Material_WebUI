@@ -29,7 +29,6 @@ function template(temp)
 <link rel="icon" href="]=]..path..[=[img/EpgTimer.ico">
 <link rel="apple-touch-icon" sizes="256x256" href="]=]..path..[=[img/apple-touch-icon.png">
 <link rel="manifest" href="]=]..path..[=[manifest.json">
-<link rel="manifest" href="]=]..path..[=[manifest.webmanifest">
 ]=]
 ..(css~='' and css or '<link rel="stylesheet" href="'..path..'css/material.min.css">')..'\n'
 ..((temp.dialog or temp.progres) and '<link rel="stylesheet" href="'..path..'css/dialog-polyfill.css">\n' or '')..[=[
@@ -57,6 +56,7 @@ window.addEventListener("load", function() {
 </script>
 ]=]
 ..((temp.dialog or temp.progres) and '<script src="'..path..'js/dialog-polyfill.js"></script>\n' or '')
+..(temp.calendar and '<script>var calendar_op="'..temp.calendar..'"</script>\n' or '')
 ..'<script>var path=\''..path..'\';var root=\''..PathToRoot()..'\';</script>\n'
 ..'<script src="'..path..'js/common.js"></script>\n'
 
@@ -146,7 +146,8 @@ s:Append([=[
 ..[=[
       <a class="mdl-navigation__link" href="]=]..path..[=[epg.html"><i class="material-icons">dashboard</i>番組表</a>
       <a class="mdl-navigation__link" href="]=]..path..[=[epgweek.html"><i class="material-icons">view_week</i>週間番組表</a>
-      <a class="mdl-navigation__link" href="]=]..path..[=[onair.html"><i class="material-icons">live_tv</i>放送中</a>
+      <a class="mdl-navigation__link" href="]=]..path..[=[onair.html"><i class="material-icons">tv</i>放送中</a>
+      <a class="mdl-navigation__link" href="]=]..path..[=[tvcast.html"><i class="material-icons">live_tv</i>リモート視聴</a>
       <a class="mdl-navigation__link" href="]=]..path..[=[reserve.html"><i class="material-icons">schedule</i>予約一覧</a>
       <a class="mdl-navigation__link" href="]=]..path..[=[tunerreserve.html"><i class="material-icons">tune</i>チューナー別</a>
       <a class="mdl-navigation__link" href="]=]..path..[=[autoaddepg.html"><i class="material-icons">update</i>EPG予約</a>
@@ -367,7 +368,8 @@ end
 s:Append('<div class="menu">\n'..(temp.menu and temp.menu or '')..'<ul id="notifylist" class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-list" for="notification">\n<li id="noNotify" class="mdl-list__item"></li>\n</ul>\n'
   ..(temp.video and
     '<ul class="ext submenu mdl-menu mdl-menu--bottom-right mdl-js-menu" for="menu_video">\n'
-    ..'<li class="mdl-menu__item"><a class="mdl-menu__item" href="onair.html?subch=">サブチャンネルを表示</a></li>'
+    ..'<li class="mdl-menu__item" id="menu_apk"><label for="subCH" class="mdl-layout-spacer">サブチャンネル</label><span><label class="mdl-switch mdl-js-switch" for="subCH"><input type="checkbox" id="subCH" class="mdl-switch__input"></label></span></li>'
+    ..'<li class="mdl-menu__item" id="menu_popup"><label for="open_popup" class="mdl-layout-spacer">ポップアップ</label><span><label class="mdl-switch mdl-js-switch" for="open_popup"><input type="checkbox" id="open_popup" class="mdl-switch__input"></label></span></li>'
     ..'<li class="hidden mdl-menu__item" id="menu_apk"><label for="apk" class="mdl-layout-spacer">アプリで開く</label><span><label class="mdl-switch mdl-js-switch" for="apk"><input type="checkbox" id="apk" class="mdl-switch__input"></label></span></li>'
     ..'<button id="menu_quality" class="hidden mdl-menu__item" disabled><span class="mdl-layout-spacer">画質</span><span><i class="material-icons">navigate_next</i></button>'
     ..'</ul></div>\n'
@@ -412,7 +414,7 @@ function ConvertEpgInfoText2(onidOrEpg, tsidOrRecInfo, sid, eid)
     end
     s=s..'</span>\n'
       ..'<a class="notify_'..v.eid..' notification notify hidden mdl-button mdl-js-button mdl-button--icon" data-onid="'..v.onid..'" data-tsid="'..v.tsid..'" data-sid="'..v.sid..'" data-eid="'..v.eid..'" data-start="'..startTime..'" data-name="'..service_name..'"'..(startTime-30<=now and ' disabled' or '')..'><i class="material-icons">'..(startTime-30<=now and 'notifications' or 'add_alert')..'</i></a>'
-      ..SearchConverter.Convert(v, service_name)..'</h4>\n'
+      ..SearchConverter(v, service_name)..'</h4>\n'
     if v.shortInfo then
       s=s..'<p>'..DecorateUri(v.shortInfo.text_char):gsub('\r?\n', '<br>\n')..'</p>\n'
     end
@@ -805,9 +807,9 @@ end
 function sidePanelTemplate(reserve)
   local s=[=[
 <div id="sidePanel" class="sidePanel mdl-layout__drawer mdl-tabs mdl-js-tabs">
-<div class="sidePanel_headder mdl-color--primary"><i class="material-icons">info_outline</i><span class="sidePanel_title">番組情報</span><div class="mdl-layout-spacer"></div><a id="epginfo" class="mdl-button mdl-js-button mdl-button--icon" target="_blank"><i class="material-icons">open_in_new</i></a><button class="close_info mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">close</i></button></div>
+<div class="sidePanel_headder mdl-color--primary"><i class="material-icons">info_outline</i><span class="sidePanel_title">番組情報</span><div class="mdl-layout-spacer"></div><a id="link_epginfo" class="mdl-button mdl-js-button mdl-button--icon" target="_blank"><i class="material-icons">open_in_new</i></a><button class="close_info mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">close</i></button></div>
 <div class="sidePanel-content">
-<div id="summary"><h4 class="mdl-typography--title"><span id="title"></span><span class="mdl-typography--subhead mdl-grid mdl-grid--no-spacing"><span id="sidePanel_date" class="date"></span><span id="service" class="service"></span></span><span id="links"></span></h4><p></p></div>
+<div id="summary"><h4 class="mdl-typography--title"><span id="title"></span><span class="mdl-typography--subhead mdl-grid mdl-grid--no-spacing"><span id="info_date" class="date"></span><span id="service" class="service"></span></span><span id="links"></span></h4><p></p></div>
 <div class="tab-container"><div class="mdl-tabs__tab-bar"><a href="#detail" class="mdl-tabs__tab is-active">番組詳細</a><a href="#recset" class="mdl-tabs__tab">録画設定</a></div>
 <section class="panel-swipe mdl-tabs__panel is-active" id="detail">
 <div id="ext" class="mdl-typography--body-1"></div>
@@ -860,12 +862,13 @@ end
 function player(video, audio, xcode, live)
   local list = edcb.GetPrivateProfile('set','quality','',ini)
   local sp=UserAgentSP()
-  local s=[=[<div id="player" class="is-small"><div class="player-container">
+  local s=[=[<div id="player" class="is-small"><div class="player-container mdl-grid mdl-grid--no-spacing">
 <div id="playerUI" class="is-visible]=]
 ..(sp and ' sp"><div id="center"><i id="play" class="ctl-button material-icons">play_arrow</i></div>' or '">')..[=[
 <div></div>
 <div id="control" class="ext bar">
 <div id="seek-container">]=]..(live and '<div class="progress mdl-slider__container"><div id="seek" class="mdl-progress mdl-js-progress"></div></div>' or '<input class="mdl-slider mdl-js-slider" type="range" id="seek" min="0" max="99" value="0" step="0.01">')..'</div>'
+..'<i id="stop" class="ctl-button material-icons">stop</i>'
 ..(not sp and '<i id="play" class="ctl-button material-icons">play_arrow</i>' or '')..[=[
 <div id="volume-wrap"><i id="volume-icon" class="ctl-button material-icons">volume_up</i>]=]..(not sp and '<p id="volume-container"><input class="mdl-slider mdl-js-slider" type="range" id="volume" min="0" max="1" value="0" step="0.01"></p>' or '')..[=[</div>
 <div class="Time-wrap"><span class="currentTime videoTime">0:00</span><span> / </span><span class="duration videoTime">0:00</span></div>
@@ -904,6 +907,8 @@ function player(video, audio, xcode, live)
   end
   s=s..[=[
 </ul>
+<i id="defult" class="player-mode ctl-button material-icons mdl-cell--hide-phone">crop_7_5</i><span class="mdl-tooltip" data-mdl-for="defult">シアターモード</span>
+<i id="theater" class="player-mode ctl-button material-icons mdl-cell--hide-phone">crop_landscape</i><span class="mdl-tooltip" data-mdl-for="theater">デフォルト表示</span>
 <i id="fullscreen" class="ctl-button material-icons">fullscreen</i>
 </div>
 ]=]
@@ -924,21 +929,18 @@ function ConvertTitle(title)
 end
 
 --検索等のリンクを派生
-SearchConverter={}
-SearchConverter.Convert=function(v, service_name)
-  local self=SearchConverter
-  self.authuser=self.authuser or edcb.GetPrivateProfile('CALENDAR','authuser','0',ini)
-  self.details=self.details or edcb.GetPrivateProfile('CALENDAR','details','%text_char%',ini)
+calendar_details=edcb.GetPrivateProfile('CALENDAR','details','%text_char%',ini)
+SearchConverter=function(v, service_name)
   local title=v.shortInfo and v.shortInfo.event_name:gsub('＜.-＞', ''):gsub('【.-】', ''):gsub('%[.-%]', ''):gsub('（.-版）', '') or ''
   local startTime=os.time(v.startTime)
   local endTime=v.durationSecond and startTime+v.durationSecond or startTime
   local text_char=v.shortInfo and v.shortInfo.text_char:gsub('\r?\n', '%%br%%'):gsub('%%', '%%%%') or ''
+  if not ct.calendar then ct.calendar='&amp;authuser='..edcb.GetPrivateProfile('CALENDAR','authuser','0',ini)..'&amp;src='..edcb.GetPrivateProfile('CALENDAR','src','',ini) end
   --クライアントサイドで使う情報を置いておく
   return '<span class="search-links hidden" data-title="'..title
     ..'" data-service="'..service_name
     ..'" data-dates="'..os.date('%Y%m%dT%H%M%S', startTime)..'/'..os.date('%Y%m%dT%H%M%S', endTime)
-    ..'" data-details="'..self.details:gsub('%%text_char%%', text_char)
-    ..'" data-authuser="'..self.authuser..'"></span>'
+    ..'" data-details="'..calendar_details:gsub('%%text_char%%', text_char)..'"></span>'
 end
 
 function RecModeTextList()

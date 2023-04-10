@@ -37,13 +37,12 @@ function createSearchLinks(obj){
 		var service = encodeURIComponent(target.attr('data-service'));
 		var dates = encodeURIComponent(target.attr('data-dates'));
 		var details = encodeURIComponent(target.attr('data-details').replace(/%br%/g, '\n'));
-		var authuser = encodeURIComponent(target.attr('data-authuser'));
 		target.addClass('search-links-created');
 		target.after('<a class="mdl-button mdl-button--icon" href="search.html?andkey=' + title + '"><i class="material-icons">search</i></a>'
 			+ '<a class="mdl-button mdl-button--icon" href="https://www.google.co.jp/search?q=' + title + '" target="_blank"><img class="material-icons" src="img/google.png" alt="Google検索"></a>'
 			+ '<a class="mdl-button mdl-button--icon" href="https://www.google.co.jp/search?q=' + title + '&amp;btnI=Im+Feeling+Lucky" target="_blank"><i class="material-icons">sentiment_satisfied</i></a>'
 			+ '<a class="mdl-button mdl-button--icon mdl-cell--hide-phone mdl-cell--hide-tablet" href="https://www.google.com/calendar/render?action=TEMPLATE&amp;text=' + title + '&amp;location=' + service
-				+ '&amp;dates=' + dates + '&amp;details=' + details + '&amp;authuser=' + authuser + '" target="_blank"><i class="material-icons">event</i></a>');
+				+ '&amp;dates=' + dates + '&amp;details=' + details + calendar_op +'" target="_blank"><i class="material-icons">event</i></a>');
 	}
 }
 
@@ -105,7 +104,7 @@ function delNotify(notify, data, noSnack){
 }
 
 //通知登録
-var NotifySound = $('<audio src="' + root + 'video/notification.mp3">')[0];
+var NotifySound = new Audio( root + "video/notification.mp3");
 NotifySound.volume = 0.2;
 function creatNotify(notify, data, save){
 	var notification = $('.mdl-js-snackbar').get(0);
@@ -145,7 +144,7 @@ function creatNotify(notify, data, save){
 				notification.close();
 			};
 
-			NotifySound.play(); //Notification.soundはどこも未対応
+			NotifySound.play();
 
 			//通知を閉じる
 			setTimeout(function(){
@@ -246,7 +245,7 @@ function setEpgInfo(info, past){
 		var start = new Date(startDate+' '+startTime);
 		if (info.find('duration').length != 0) endTime = new Date(start.getTime() + Number(info.find('duration').text())*1000);
 
-		$('#sidePanel_date').html(startDate +'('+ week[info.find('startDayOfWeek').text()] +') '+ FormatTime(startTime, endTime));
+		$('#info_date').html(startDate +'('+ week[info.find('startDayOfWeek').text()] +') '+ FormatTime(startTime, endTime));
 		progReserve(start, endTime, eid)
 
 		if (!endTime || Date.now()<endTime){
@@ -257,12 +256,12 @@ function setEpgInfo(info, past){
 			$('#sidePanel .mdl-dialog__actions').hide();
 		}
 	}else{
-		$('#sidePanel_date').html('未定');
+		$('#info_date').html('未定');
 		$('#sidePanel .mdl-tabs__tab-bar').show();
 		$('#sidePanel .mdl-dialog__actions').show();
 	}
 
-	$('#service').html(info.find('service_name').text());
+	$('#service,#service_hedder').html(info.find('service_name').text());
 	$('#links').html($('.open .links a').clone(true));
 	$('#summary p').html( ConvertText(info.find('event_text').text()) );
 	$('#ext').html( ConvertText(info.find('event_ext_text').text()) );
@@ -299,7 +298,7 @@ function setEpgInfo(info, past){
 	$('[name=sid]').val(sid);
 	$('[name=eid]').val(eid);
 
-	$('#epginfo').attr('href', 'epginfo.html?onid='+ onid +'&tsid='+ tsid +'&sid='+ sid + (past ? '&startTime='+ past : '&eid='+ eid));
+	$('#link_epginfo').attr('href', 'epginfo.html?onid='+ onid +'&tsid='+ tsid +'&sid='+ sid + (past ? '&startTime='+ past : '&eid='+ eid));
 	$('#set').data('onid', onid).data('tsid', tsid).data('sid', sid).data('eid', eid);
 }
 
@@ -395,7 +394,7 @@ function getEpgInfo(target, data, past){
 						if (Reserve){
 							setEpgInfo(Reserve);
 
-							$('#epginfo').attr('href', 'reserveinfo.html?id=' + id);
+							$('#link_epginfo').attr('href', 'reserveinfo.html?id=' + id);
 							$('[href="#detail"], #detail').removeClass('is-active');
 							$('[href="#recset"], #recset').addClass('is-active');
 
@@ -469,7 +468,7 @@ function setAutoAdd(target){
 		if (autoadd){
 			$('#set').attr('action', root + 'api/SetAutoAdd?id='+id);
 			$('#del').attr('action', root + 'api/SetAutoAdd?id='+id);
-			$('#epginfo').attr('href', 'autoaddepginfo.html?id='+id);
+			$('#link_epginfo').attr('href', 'autoaddepginfo.html?id='+id);
 
 			if (autoadd.find('disableFlag').text() == 1){
 				$('#disable').prop('checked', true).parent().addClass('is-checked');
@@ -608,7 +607,7 @@ function setRecInfo(target){
 			var endTime = new Date(new Date(startDate+' '+startTime).getTime() + Number(xml.find('duration').text())*1000);
 
 			$('#title').html( ConvertTitle(xml.find('title').text()) );
-			$('#sidePanel_date').html(startDate +'('+ week[xml.find('startDayOfWeek').text()] +') '+ FormatTime(startTime, endTime));
+			$('#info_date').html(startDate +'('+ week[xml.find('startDayOfWeek').text()] +') '+ FormatTime(startTime, endTime));
 			$('#service').html(xml.find('service_name').text());
 
 			$('#comment').text(xml.find('comment').text());
@@ -631,7 +630,7 @@ function setRecInfo(target){
 
 			var id = xml.find('ID').first().text();
 			$('#del').attr('action', root + 'api/SetRecInfo?id=' +id).next('button').prop('disabled', xml.find('protect').text()=='1');
-			$('#epginfo').attr('href', 'recinfodesc.html?id=' +id);
+			$('#link_epginfo').attr('href', 'recinfodesc.html?id=' +id);
 
 			$('#sidePanel, .close_info.mdl-layout__obfuscator').addClass('is-visible');
 			showSpinner();
@@ -960,6 +959,29 @@ function addMark(xml, target, content){
 	return messege;
 }
 
+$(window).on('load resize', function(){
+	if (window.innerWidth < 700 && !$('#dateList_edit').hasClass('is-visible')){
+		$('#add_dateList').prop('disabled', true);
+	}else{
+		$('#add_dateList').prop('disabled', false);
+	}
+	//マクロ補助
+	if ($(window).width() > 700){
+		$('.shrink-phone').show();
+		$('.check-shrink-phone').prop('checked', true);
+		$('.drawer-separator.mdl-cell--hide-desktop').hide();
+	}else{
+		$('.shrink-phone').hide();
+		$('.check-shrink-phone').prop('checked', false);
+		$('.drawer-separator.mdl-cell--hide-desktop').show();
+	}
+});
+
+//サービスワーカーの登録
+if ("serviceWorker" in navigator) {
+	navigator.serviceWorker.register("serviceworker.js");
+}
+
 $(function(){
 	var notification = $('.mdl-js-snackbar').get(0);
 
@@ -990,6 +1012,7 @@ $(function(){
 	$('tr.epginfo').click(function(e){
 		if (!$(e.target).is('.flag, .flag *, .count a')){
 			if ($(this).data('onid')){
+				createSearchLinks(this);
 				getEpgInfo($(this), $(this).data());
 			}else if($(this).data('id')){
 				setAutoAdd($(this));
@@ -1229,26 +1252,7 @@ $(function(){
 		}
 		$('#dateList_edit').toggleClass('is-visible');
 	});
-	$(window).on('load resize', function(){
-		if (window.innerWidth < 700 && !$('#dateList_edit').hasClass('is-visible')){
-			$('#add_dateList').prop('disabled', true);
-		}else{
-			$('#add_dateList').prop('disabled', false);
-		}
-	});
 
-	//マクロ補助
-	$(window).on('load resize', function(){
-		if ($(window).width() > 700){
-			$('.shrink-phone').show();
-			$('.check-shrink-phone').prop('checked', true);
-			$('.drawer-separator.mdl-cell--hide-desktop').hide();
-		}else{
-			$('.shrink-phone').hide();
-			$('.check-shrink-phone').prop('checked', false);
-			$('.drawer-separator.mdl-cell--hide-desktop').show();
-		}
-	});
 	$('.addmacro').click(function(){
 		macro(this);
 	});
