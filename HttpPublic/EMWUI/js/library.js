@@ -1,4 +1,4 @@
-var loadingMovieList;
+﻿var loadingMovieList;
 //ライブラリ一覧取得
 function getMovieList(Snack){
 	loadingMovieList = true;
@@ -14,7 +14,14 @@ function getMovieList(Snack){
 					showSpinner();
 				}else{
 					xml = new XMLSerializer().serializeToString(xml);
-					sessionStorage.setItem('movie', xml);
+					try {
+						sessionStorage.setItem('movie', xml);
+					} catch (e) {
+						if (e.name === 'QuotaExceededError') {
+							console.log('Error: 5MB以上のデータを保存できないため、ライブラリキャッシュを無効化');
+						}
+					}
+					window.movieXmlData = xml;
 					sessionStorage.setItem('movie_expires', new Date().getTime() + 24*60*60*1000);
 					loadingMovieList = false;
 					refreshPath = true;
@@ -99,6 +106,12 @@ function folder(){
 		var folder = [];
 		var file = [];
 		var xml = sessionStorage.getItem('movie');
+		if (xml === null && window.movieXmlData) {
+			xml = window.movieXmlData;
+		} else if (xml === null) {
+			getMovieList();
+			xml = window.movieXmlData;
+		}
 		var movie = new DOMParser().parseFromString(xml, 'text/xml');
 		$(movie).find('dir').each(function(){
 			if ($(this).children('id').text() == id){
@@ -239,6 +252,12 @@ function librarySearch(key){
 			var found;
 			var file = [];
 			var xml = sessionStorage.getItem('movie');
+			if (xml === null && window.movieXmlData) {
+				xml = window.movieXmlData;
+			} else if (xml === null) {
+				getMovieList();
+				xml = window.movieXmlData;
+			}
 			var movie = new DOMParser().parseFromString(xml, 'text/xml');
 			$('.library').empty();
 			if (ViewMode == 'grid'){
