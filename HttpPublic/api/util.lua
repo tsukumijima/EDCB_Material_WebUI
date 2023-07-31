@@ -92,8 +92,10 @@ end
 if not ARIBB24_JS_OPTION then
 --字幕表示のオプション https://github.com/monyone/aribb24.js#options
 ARIBB24_JS_OPTION=[=[
-  normalFont:'"Windows TV MaruGothic","Rounded M+ 1m for ARIB","Yu Gothic Medium",sans-serif',
-  drcsReplacement:true
+  normalFont: '"Windows TV MaruGothic","Rounded M+ 1m for ARIB","Yu Gothic Medium",sans-serif',
+  forceStrokeColor: '#000000',
+  drcsReplacement: true,
+  useStroke: true,
 ]=]
 
 end
