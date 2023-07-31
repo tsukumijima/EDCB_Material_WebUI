@@ -1,4 +1,4 @@
-﻿dofile(mg.document_root..'\\api\\util.lua')
+dofile(mg.document_root..'\\api\\util.lua')
 
 sidePanel=tonumber(edcb.GetPrivateProfile('GUIDE','sidePanel',true,ini))~=0
 

@@ -1,4 +1,4 @@
-﻿ini='Setting\\HttpPublic.ini'
+ini='Setting\\HttpPublic.ini'
 
 --EDCBのロゴフォルダにロゴがないときにTvTestのロゴを検索するかどうか
 LOGO_DIR=tonumber(edcb.GetPrivateProfile('SET','TVTest_LOGO',false,ini))~=0
