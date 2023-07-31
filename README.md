@@ -1,6 +1,8 @@
 EDCB Material WebUI
 ===================
 
+![Screenshot](https://github.com/tsukumijima/EDCB_Material_WebUI/assets/39271166/20737402-3a33-4c28-b8c6-43e23388fdad)
+
 ## 本家からの変更点
 
 いくつかの改善や不具合修正を行っています。
@@ -17,13 +19,11 @@ EDCB Material WebUI
 * ソースコードの文字コードを UTF-8 (BOM なし) に統一した
 
 [DTV-Builds](https://github.com/tsukumijima/DTV-Builds) で配布している、EDCB のビルド済みアーカイブのファイル構成で利用することを想定しています。  
-それ以外の環境に導入する際は、適切に EDCB\Tools 以下に必要な実行ファイルをダウンロード・配置してください。
+それ以外の環境に導入する際は、適宜必要な実行ファイルを EDCB\Tools 以下に適切に配置してください。
 
----
+-------------------
 
-![Screenshot](screenshot.png)
-
-**EDCBのWebUIをMaterial Design Lite使いマテリアルデザインに沿うように表示できます**  
+**EDCBのWebUIをMaterial Design Liteを使いマテリアルデザインに沿うように表示できます**  
 
 予約の追加確認、番組表の表示などの基本的な機能の他、リモート視聴・ファイル再生、PWAなどに対応しています  
 
