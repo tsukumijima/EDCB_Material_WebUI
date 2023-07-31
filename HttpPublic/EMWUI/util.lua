@@ -6,7 +6,7 @@ function template(temp)
   local esc=edcb.htmlEscape
   edcb.htmlEscape=0
   local path=temp.path or ''
-  local Roboto=tonumber(edcb.GetPrivateProfile('SET','Roboto',false,ini))~=0
+  local Roboto=tonumber(edcb.GetPrivateProfile('SET','Roboto',true,ini))~=0
   local css=edcb.GetPrivateProfile('SET','css','<link rel="stylesheet" href="'..path..'css/material.min.css">',ini)..'\n'
   local Olympic=tonumber(edcb.GetPrivateProfile('SET','Olympic',false,ini))~=0
   local suspend=''
@@ -58,13 +58,6 @@ function template(temp)
 <script src="]=]..path..[=[js/hammer.min.js"></script>
 <script src="]=]..path..[=[js/jquery.hammer.js"></script>
 <script src="]=]..path..[=[js/pwacompat.min.js"></script>
-<script>
-window.addEventListener("load", function() {
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("]=]..path..[=[serviceworker.js");
-  }
-});
-</script>
 ]=]
 ..((temp.dialog or temp.progres) and '<script src="'..path..'js/dialog-polyfill.js"></script>\n' or '')
 ..'<script>var path=\''..path..'\';var root=\''..PathToRoot()..(temp.searchlinks and '\';var calendar_op=\'&amp;authuser='..edcb.GetPrivateProfile('CALENDAR','authuser','0',ini)..'&amp;src='..edcb.GetPrivateProfile('CALENDAR','src','',ini) or '')..'\';</script>\n'
@@ -428,7 +421,7 @@ function RecSettingTemplate(rs)
       s=s..'\n<option value="'..i..'"'..(rs.priority==i and ' selected' or '')..'>'..i
     end
     s=s..'\n</select></div></div>\n'
-    
+
     ..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-spacing">\n<div class="mdl-cell mdl-cell--3-col mdl-cell--2-col-tablet mdl-cell--middle">ぴったり（？）録画</div>\n'
     ..'<div class="mdl-layout-spacer mdl-cell--hide-desktop mdl-cell--hide-tablet"></div>\n'
     ..'<div><label for="pittariFlag" class="mdl-switch mdl-js-switch"><input id="pittariFlag" class="mdl-switch__input" type="checkbox" name="pittariFlag" value="1"'..(rs.pittariFlag and ' checked' or '')..'><span class="mdl-switch__label"></span></label></div></div>\n'
@@ -903,7 +896,7 @@ function player(video, live)
 ]=]
   ..((ALLOW_HLS or live) and '<script>'..(ALLOW_HLS and 'ALLOW_HLS=true;' or '')..(live and 'var ctok=\''..CsrfToken('view')..'\';' or '')..'</script>\n' or '')
   ..'<script src="js/legacy.script.js"></script>\n'
-  
+
   ..((USE_DATACAST or live and USE_LIVEJK or not live and JKRDLOG_PATH~='') and '<script src="js/datastream.js"></script>\n' or '')
 
   ..(USE_DATACAST and '<script src="js/web_bml_play_ts.js"></script>\n' or '')
