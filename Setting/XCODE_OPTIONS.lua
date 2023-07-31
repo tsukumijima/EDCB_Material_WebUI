@@ -17,6 +17,7 @@
 --xcoder:トランスコーダーのToolsフォルダからの相対パス。'|'で複数候補を指定可。見つからなければ最終候補にパスが通っているとみなす
 --option:$OUTPUTは必須、再生時に適宜置換される。標準入力からMPEG2-TSを受け取るようにオプションを指定する
 --filter*Fast:倍速再生用、未定義でもよい
+--[[
 XCODE_OPTIONS={
   {
     --ffmpegの例。-b:vでおおよその最大ビットレートを決め、-qminで動きの少ないシーンのデータ量を節約する
@@ -59,14 +60,17 @@ XCODE_OPTIONS={
     outputHls={'m2t','-f mpegts -o -'},
   },
 }
+--]]
 
 
 
 --字幕表示のオプション https://github.com/monyone/aribb24.js#options
+--[[
 ARIBB24_JS_OPTION=[=[
   normalFont:'"Windows TV MaruGothic","Rounded M+ 1m for ARIB","Yu Gothic Medium",sans-serif',
   drcsReplacement:true
 ]=]
+--]]
 
 
 
