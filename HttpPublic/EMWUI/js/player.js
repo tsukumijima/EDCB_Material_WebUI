@@ -15,7 +15,7 @@ if (ts.tslive){
 	$(document).one('click', () => {
 		vid.muted = muted;
 		document.querySelector('#volume').MaterialSlider&&document.querySelector('#volume').MaterialSlider.change(vid.muted?0:vid.volume);
-	});	
+	});
 }
 
 const thumb = 'createMiscWasmModule' in window && new TsThumb(`${ROOT}api/grabber`, document.querySelector('#vid-thumb'), video);
@@ -293,7 +293,7 @@ $(function(){
 	});
 
 	$('#play').click(() => vid.paused ? vid.play() : vid.pause());
-	
+
 	const $stop = $('.stop');
 	const $epginfo = $('#epginfo');
 	$stop.click(() => {
@@ -439,7 +439,7 @@ $(function(){
 			pipWindow.document.body.setAttribute('id','popup');
 			pipWindow.document.body.setAttribute('class','is-visible');
 			pipWindow.document.body.append(content);
-			
+
 			pipWindow.addEventListener('resize', () => setbmlBrowserSize());
 			pipWindow.addEventListener("pagehide", (event) => {
 				container.prepend(content);
@@ -467,7 +467,7 @@ $(function(){
 		$e.prop('checked', true);
 		ts.setOption($e.val(), $e.hasClass('tslive'), vid.readyToAutoPlay ? () => ts.toTslive=true : toggleTslive);
 	})()
-	
+
 	$('[name=quality]').change(e => {
 		const $e = $(e.currentTarget);
 		localStorage.setItem('quality', $e.attr('id'));
@@ -567,7 +567,7 @@ $(function(){
 			}, 1000);
 		}
 	});
-	
+
 	$("#jikkyo-comm").appendTo('#apps-container>.container>.container');
 	$('#apps').change(e => {
 		($(e.currentTarget).prop('checked'))

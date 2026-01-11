@@ -18,7 +18,7 @@ ctt={}
 for i,v in ipairs(edcb.GetTunerReserveAll()) do
   ct.tab=ct.tab..'<a href="?tab='..i..'" class="mdl-layout__tab'..(i==tab and ' is-active' or '')..'">'..i..':'..v.tunerName..' ('..#v.reserveList..')</a>\n'
 
-  if i==tab then 
+  if i==tab then
     a={}
     for j,w in ipairs(v.reserveList) do
       table.insert(a, edcb.GetReserveData(w))

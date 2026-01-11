@@ -96,10 +96,10 @@ html, body, .mdl-textfield__input {
   input[type=date],
   input[type=date]::-webkit-clear-button,
   input[type=date]::-webkit-inner-spin-button,
-  input[type=date]::-webkit-date-and-time-value { 
+  input[type=date]::-webkit-date-and-time-value {
     -webkit-appearance: none;
     margin-inline-start: 0; }
-  input[type=date]::-webkit-date-and-time-value { 
+  input[type=date]::-webkit-date-and-time-value {
     margin: 0; }
   input[type=date]::-webkit-calendar-picker-indicator {
     color: transparent;
@@ -611,7 +611,7 @@ h4 .mdl-button--icon {
   >div {
     margin-left: 8px; }
   >div:not(.container),
-  .container>div { 
+  .container>div {
     display: flex;
     flex-wrap: wrap; } }
  #detail div>div>div:has(.mdl-textfield) {
@@ -1360,7 +1360,7 @@ h4 .mdl-button--icon {
 input[type=text] {
   padding: 4px 24px 4px 12px; }
   #search-bar input[type=text] {
-    padding: 0; }  
+    padding: 0; }
 .mdl-textfield__label {
   box-sizing: border-box;
   padding: 0px 12px; }
@@ -1554,7 +1554,7 @@ input[type=text] {
     justify-content: flex-end;
     flex-wrap: wrap;
     grid-column: 2 / 3;
-    grid-row: 2 / 3; 
+    grid-row: 2 / 3;
     .mdl-chip {
       margin-right: 0!important;
       &:not(:first-child),
@@ -1777,7 +1777,7 @@ input[type=text] {
     max-height: calc(90vh - 130px); }
   section#movie #stop {
     display: none; }
-  
+
   .arib-video-container {
     display: flex;
     justify-content: center; }
@@ -1883,7 +1883,7 @@ input[type=text] {
   #tvcast #playnext,
   #movie-theater-container #defult,
   #movie-container #theater,
-  .is-small-screen .player-mode { 
+  .is-small-screen .player-mode {
     display: none; }
 #vid-cont {
   flex-grow: 1;
@@ -1973,7 +1973,7 @@ input[type=text] {
       background: rgba(255,255,255,0.3); }
     #control .mdl-menu__outline {
       background: rgba(28,28,28,0.9); }
-    .ext.mdl-menu__item { 
+    .ext.mdl-menu__item {
       input[type="radio"] {
         display: none!important; }
       input[type="radio"]:not(:checked)+label {
@@ -2165,7 +2165,7 @@ input[type=text] {
   display:     -ms-flexbox;
   display:         flex;
   flex-direction: column;
-  overflow: auto; 
+  overflow: auto;
   .draggable {
     opacity: 0;
     flex-grow: 1;
@@ -2559,7 +2559,7 @@ input[type=text] {
 
 #epginfo {
   position: relative;
-  padding: 8px 40px 16px; 
+  padding: 8px 40px 16px;
   margin: 16px 0 0; }
   .is-small-screen #epginfo {
     margin: 0; }

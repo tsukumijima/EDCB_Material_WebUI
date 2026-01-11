@@ -256,7 +256,7 @@ else
         local thumbHash
         if not v.isdir then
           thumbHash=MakeThumbs(PathAppend(dir,v.name), true)
-        end 
+        end
         table.insert(ct, (v.isdir and '<dir>' or '<file>')..'<name>'
           ..EdcbHtmlEscape(v.name)..'</name><hash>'
           ..mg.md5(v.name)..'</hash><date>'
@@ -297,7 +297,7 @@ else
           pgtxt=GetPgtxt(ref)
           if pgtxt then table.insert(ct, '<programInfo>'..EdcbHtmlEscape(pgtxt)..'</programInfo>') end
         end
-          
+
         if info.ists then
           local tsreadex=FindToolsCommand('tsreadex')
           local ffprobe

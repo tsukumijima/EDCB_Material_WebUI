@@ -548,7 +548,7 @@ const hlsMixin = (Base = class {}) => class extends Base{
 
 		this.#fast = val;
 		if (!this.#e.initSrc) this.#e.playbackRate = val;
-		
+
 		this.#reload(onload);
 	}
 	#canPlayType(s){
@@ -679,7 +679,7 @@ class TsThumb{
 	#value;
 	async #get(path, value, id){
 		if (!this.#mod) return;
-	
+
 		const url = path ? new URL(this.#api, location.href) : this.#url;
 		if (path) url.searchParams.set(this.#key, path);
 		this.#value = value;
@@ -1567,7 +1567,7 @@ const datacastMixin = (Base = class {}) => class extends Base{
 			this.#jklog.xhr.send();
 		}
 	}
-	
+
 	#sendComment(){
 		if(!this.#elems.commInput.value) return;
 

@@ -1352,7 +1352,7 @@ function GetRecSetting(post)
   return false
 end
 
---検索条件を取得  
+--検索条件を取得
 --文字列返却値(andKeyとnotKey)の実体参照変換はedcb.htmlEscapeに従う
 function GetSearchKey(post)
   local notKey=mg.get_var(post,'notKey') or ''
@@ -1416,7 +1416,7 @@ function GetSearchKey(post)
   return key
 end
 
---検索条件(キーワードのみ)を取得  
+--検索条件(キーワードのみ)を取得
 --文字列返却値(andKey)の実体参照変換はedcb.htmlEscapeに従う
 function GetSearchKeyKeyword(query)
   local key=GetSearchKey()

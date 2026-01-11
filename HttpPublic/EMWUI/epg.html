@@ -116,7 +116,7 @@ if 0<CH_COUNT then
 
   if CH_COUNT<n then
     ct.subheader=ct.subheader..'<div id="page" class="pulldown dividers navigation__item mdl-color-text--primary">ページ '..(pageIndex+1)..'</div>\n'
-    
+
     table.insert(main, '<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu" for="page">\n')
     for i=0, math.ceil(n/CH_COUNT-1) do
       table.insert(main, '<li><a class="mdl-menu__item'..(pageIndex==i and ' mdl-color-text--accent' or '" href="epg.html'..hrefGene({chpage=i}))..'">ページ '..(i+1)..'</a></li>\n')
@@ -189,7 +189,7 @@ ct.side='<input type="checkbox" class="hidden" id="a">\n'
   ..'<label class="drop-down mdl-navigation__link" for="a">サービス</label>\n'
   ..'<ul>\n'
 
-WIDE={ 
+WIDE={
   --少し拡幅する
   ['32391-32391-23608']=true, --MX
 }

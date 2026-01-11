@@ -38,7 +38,7 @@ for i=page*pageCount+1,math.min(#a,(page+1)*pageCount) do
   v=a[i]
   if SHOW_THUMB_IN_RECINFO then
     table.insert(ctt, '<div class="grid-container open-info" data-'..(SIDE_PANEL and 'recinfo="'..v.id or 'href="recinfodesc.html?id='..v.id)..'">'
-      ..(EdcbFindFilePlain(b[i].recFilePath) and '<div class="thumb-container"><i class="material-icons">movie</i><canvas class="thumb" data-id="'..v.id..'"></canvas></div>' 
+      ..(EdcbFindFilePlain(b[i].recFilePath) and '<div class="thumb-container"><i class="material-icons">movie</i><canvas class="thumb" data-id="'..v.id..'"></canvas></div>'
         or '<div class="thumb-container mdl-cell--hide-phone"><i class="material-icons">movie_off</i></div>')
       ..'<div class="summary mdl-typography--title">'
       ..'<span class="title'..(v.drops>0 and ' mdl-color-text--red-A700' or v.scrambles>0 and ' mdl-color-text--yellow-A700' or '')..'">'..ConvertTitle(v.title)

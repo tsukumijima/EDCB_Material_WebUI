@@ -62,7 +62,7 @@ class TvGuide{
 		this.#deltaY *= this.#friction;
 		this.#lastTime = time;
 
-		if (Math.abs(this.#deltaX)<this.#limit && Math.abs(this.#deltaY)<this.#limit) return;		
+		if (Math.abs(this.#deltaX)<this.#limit && Math.abs(this.#deltaY)<this.#limit) return;
 		this.#momentID = requestAnimationFrame(() => this.#moment());
 	}
 	#clearMoment(){

@@ -262,7 +262,7 @@ MdlChip={
   getColorClass=function(self, s)
     local n = 0
     for i = 1, #s do n = n + s:byte(i) end
-    return 'mdl-color--'..self.color[n % #self.color + 1]..'-100' 
+    return 'mdl-color--'..self.color[n % #self.color + 1]..'-100'
   end,
   tag=function(self, s, a, b)
     return '<span class="mdl-chip '..(a or self:getColorClass(s))..'"><span class="mdl-chip__text'..(b or '')..'">'..s..'</span></span>\n'
@@ -280,7 +280,7 @@ function ConvertEpgInfoText2(onidOrEpg, tsidOrRecInfo, sid, eid)
     for i,w in ipairs(edcb.GetServiceList() or {}) do
       if w.onid==v.onid and w.tsid==v.tsid and w.sid==v.sid then
         service_name=w.service_name
-        s=s..'<span><img class="logo" src="'..PathToRoot()..'api/logo?onid='..v.onid..'&amp;sid='..v.sid..'"><span class="service">'..service_name..'</span></span>' 
+        s=s..'<span><img class="logo" src="'..PathToRoot()..'api/logo?onid='..v.onid..'&amp;sid='..v.sid..'"><span class="service">'..service_name..'</span></span>'
         break
       end
     end
@@ -341,7 +341,7 @@ function ConvertEpgInfoText2(onidOrEpg, tsidOrRecInfo, sid, eid)
     ..(NetworkType(v.onid)=='地デジ' and '' or MdlChip:tag(v.freeCAFlag and '有料放送' or '無料放送'))
     ..MdlChip:tag(('%d-%d-%d-%d'):format(v.onid,v.tsid,v.sid,v.eid))
     ..'</div></div>\n'
-    ..'</div></section>\n', 
+    ..'</div></section>\n',
     v.audioInfoList, v.durationSecond and startTime+v.durationSecond<now
 end
 
@@ -755,7 +755,7 @@ function SidePanelTemplate(list)
       s=s..'<option value="'..v.id..'">'..v.name..'\n'
     end
   end
-  
+
   return [=[
 <div id="sidePanel" class="sidePanel mdl-layout__drawer mdl-tabs mdl-js-tabs">
 <div class="sidePanel_headder mdl-color--primary"><i class="material-icons">info</i><span class="sidePanel_title">番組情報</span><div class="mdl-layout-spacer"></div><a id="link_epginfo" class="mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">open_in_new</i></a><button class="close_info mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">close</i></button></div>

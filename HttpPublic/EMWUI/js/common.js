@@ -202,7 +202,7 @@ const toObj = {
 				nibble1: $(e).num('nibble1'),
 				nibble2: $(e).num('nibble2'),
 				component_type_name: $(e).txt('component_type_name')
-			})),			
+			})),
 			video: e.children('videoInfo').get().map(e => ({
 				stream_content: $(e).num('stream_content'),
 				component_type: $(e).num('component_type'),
@@ -1342,7 +1342,7 @@ const fixRecToggleSW = (d, $e = $('.open')) => {
 	//検索ページ向け
 	if ($e.hasClass('search')){
 		//スイッチ追加
-		if (!$e.data('starttime')){		
+		if (!$e.data('starttime')){
 			$e.data('starttime', d.starttime - d.recSetting.startMargine * 1000);
 			const $switch = createSwitch(d);
 			componentHandler.upgradeElement($switch.children().get(0));
@@ -1412,7 +1412,7 @@ const getEpgInfo = async ($e, d = $e.data()) => {
 			getList.reserve(r => {
 				r = r[0].get(id);
 				if (r){
-					if (!rid){															//追加されてた				
+					if (!rid){															//追加されてた
 						if ($e.hasClass('onair')) $e.data(`${d.next ? 'next' : ''}id`, r.id);
 						else if ($e.hasClass('reserve')) fixRecToggleSW(r);
 						else addRecMark(r, $('.open .addreserve'), $('.open .content-wrap'));
@@ -1423,7 +1423,7 @@ const getEpgInfo = async ($e, d = $e.data()) => {
 						createHtml.create();
 					}else{
 						if ($e.hasClass('onair')) $e.removeData(`${d.next ? 'next' : ''}id`);
-		
+
 						setDefault(true);
 						$('#sidePanel, .close_info.mdl-layout__obfuscator').addClass('is-visible');
 					}
@@ -1602,7 +1602,7 @@ $(function(){
 	//全選択
 	$('.all_select').click(() => $('#serviceList option').not('.hidden').prop('selected', true));
 	//映像のみ表示
-	$('#image').change(e => { 
+	$('#image').change(e => {
 		if ($(e.currentTarget).prop('checked')) $('#serviceList option.data').addClass('hidden');
 		else $('.extraction:checked').each((i, e) => $(`#serviceList ${$(e).val()}`).removeClass('hidden'))
 	});
@@ -1722,7 +1722,7 @@ $(function(){
 		$(e.currentTarget).parents('td').data('toggle', $(e.currentTarget).prop('checked') ? 1 : 0);
 		addReserve($(e.currentTarget));
 	});
-	
+
 	//検索ページ向け
 	//予約追加ボタン
 	$('.add').click(e => addReserve($(e.currentTarget)));

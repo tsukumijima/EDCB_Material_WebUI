@@ -6,7 +6,7 @@ $(function(){
 	const isList = () => viewMode == LIST || viewMode == CONP;
 
 	const thumb = 'createMiscWasmModule' in window && new TsThumb(`${ROOT}api/grabber`);
-	
+
 	//ライブラリ取得
 	const getLibrary = hash => {
 		if (hash){
@@ -154,7 +154,7 @@ $(function(){
 						const done = await thumb.setThumb(thumbCanvas, $e.data('path'), 0.1);
 						if (done) rollCanvas.before(thumbCanvas);
 					})();
-					
+
 					$e.addClass(`${['card','grid'][viewMode-1]}-container`).append([
 						$('<div>', {class: 'thumb-container', on: hover, append: [
 							thumbHash ? $('<img>', {src:  `${ROOT}video/thumbs/${thumbHash}.jpg`}) : $('<i>', {class: 'material-icons', text: 'movie_creation'}),
