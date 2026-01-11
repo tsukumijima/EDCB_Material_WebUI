@@ -17,9 +17,42 @@ EDCB Material WebUI
 * デフォルトの環境設定をカスタマイズした
 * デフォルトのトランスコード設定をカスタマイズした
 * ソースコードの文字コードを UTF-8 (BOM なし) に統一した
+* 2026年1月追記: 末尾の空白を削除した
+* 2026年1月追記: upstream から取り込んだ最新の変更のうち、明らかな実装ミスやバグを修正した
 
 [DTV-Builds](https://github.com/tsukumijima/DTV-Builds) で配布している、EDCB のビルド済みアーカイブのファイル構成で利用することを想定しています。  
 それ以外の環境に導入する際は、適宜必要な実行ファイルを EDCB\Tools 以下に適切に配置してください。
+
+### Tools フォルダに配置するツールについて
+
+ツールの配置場所は `Tools/` 直下でも `Tools/サブフォルダ/` でも動作します（`XCODE_OPTIONS.lua` の xcoder 設定で複数候補をフォールバック指定しているため）。
+
+#### 必須ツール
+
+| ツール | 用途 | 必要条件 | 入手先 |
+|--------|------|----------|--------|
+| tsreadex.exe | TS ストリーム読み込み | リモート視聴・ファイル再生時（TS-Live! 含む） | [tsreadex](https://github.com/xtne6f/tsreadex) |
+| ffmpeg.exe | トランスコード・サムネイル生成 | トランスコード再生時（TS-Live! 以外） | [FFmpeg](https://ffmpeg.org/) |
+
+#### 機能別オプショナルツール
+
+| ツール | 用途 | 必要条件 | 入手先 |
+|--------|------|----------|--------|
+| ffprobe.exe | メタ情報取得 | シーク精度向上（なくても動作） | ffmpeg に同梱 |
+| tsmemseg.exe | HLS セグメント化 | `ALLOW_HLS=1` 時 | [tsmemseg](https://github.com/xtne6f/tsmemseg) |
+| psisiarc.exe | データ放送表示 | `ALLOW_ARIB_DATA=1` 時 | [psisiarc](https://github.com/xtne6f/psisiarc) |
+| psisimux.exe | 字幕ストリーム抽出 | ライブラリ字幕表示時 | [psisimux](https://github.com/xtne6f/psisimux) |
+| asyncbuf.exe | 出力バッファリング | `XCODE_BUF > 0` 時 | EDCB に同梱 |
+| edcbnosuspend.exe | PC スリープ防止 | スリープ防止機能使用時（Windows 専用） | EDCB に同梱 |
+| tspgtxt.exe | 字幕テキスト抽出 | ライブラリ字幕表示時 | EDCB に同梱 |
+
+#### ハードウェアエンコーダー
+
+| ツール | 用途 | 入手先 |
+|--------|------|--------|
+| QSVEncC64.exe | Intel QSV エンコード | [QSVEnc](https://github.com/rigaya/QSVEnc) |
+| NVEncC64.exe | NVIDIA GPU エンコード | [NVEnc](https://github.com/rigaya/NVEnc) |
+| VCEEncC64.exe | AMD VCE エンコード | [VCEEnc](https://github.com/rigaya/VCEEnc) |
 
 -------------------
 
