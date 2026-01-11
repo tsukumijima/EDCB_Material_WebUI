@@ -43,6 +43,8 @@ function EpgJsTemplate(baseTime,NOW,date,lastTime)
     ..(HOVER and 'true,' or 'false,')
     ..(NOW and 'true,' or 'false,')
     ..(date and 'true,' or 'false,')
+    ..(NOW and 'true,' or 'false,')  --addMin: 現時刻ラインに分を表示
+    ..'true'                         --subheader: サブヘッダー連動を有効化（末尾カンマ不要）
     ..');const ctok=\''..CsrfToken('setreserve')
     ..'\';</script>\n'
 end
