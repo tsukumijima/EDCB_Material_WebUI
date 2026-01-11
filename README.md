@@ -45,33 +45,51 @@ EDCB Material WebUI
 ※ ここでうまく行かない場合はEDCBの設定の問題だと思われます
 1. ファイルを適切に設置 (下記の配置例を参照)  
    `HttpPublic`と`Setting`のフォルダをEDCBフォルダに入れる  
-   ※ 配置例 (EMWUI、legacyは任意にリネーム等化)
+   ※ 配置例 (EMWUI、legacyは任意にリネーム等可)
 
        EDCB/
         ├─ HttpPublic/
         │   ├─ api/
         │   ├─ EMWUI/
+        │   │   ├─js/
+        │   │   :  ├─ts-live.js
+        │   │      └─ts-live.wasm
         │   ├─ legacy/
         │   ├─ img/
         │   │   └─logo/
         │   ├─ video/
-        │   └─ index.html
+        │   ├─ index.html
+        │   :
+        │
         ├─ Tools/
-        │   ├─ ffmpeg.exe
-        │   ├─ ffprobe.exe
-        │   ├─ tsreadex.exe
+        │   ├─ ffmpeg/
+        │   │   ├─ ffmpeg.exe
+        │   │   ├─ ffprobe.exe
+        │   │   :
+        │   ├─ NVEncC/
+        │   │   :
+        │   ├─ QSVEncC/
+        │   │   :
         │   ├─ asyncbuf.exe
-        │   ├─ tsmemseg.exe
+        │   ├─ edcbnosuspend.exe
         │   ├─ psisiarc.exe
-        │   └─ edcbnosuspend.exe
+        │   ├─ psisimux.exe
+        │   ├─ tsmemseg.exe
+        │   ├─ tsreadex.exe
+        │   ├─ tspgtxt.exe
+        │   :
+        │
         ├─ Setting/
         │   ├─ XCODE_OPTIONS.lua
-        │   └─ HttpPublic.ini
+        │   ├─ HttpPublic.ini
+        │   :
+        │
         ├─ EpgDataCap_Bon.exe
         ├─ EpgTimerSrv.exe
         ├─ EpgTimer.exe
         ├─ lua52.dll
-        └─ SendTSTCP.dll
+        ├─ SendTSTCP.dll
+        :
 
 1. リモート視聴する場合EpgDataCap_Bonなどのネットワーク設定でTCP送信先にSrvPipeを追加
 1. http://localhost:5510/EMWUI/ にアクセス出来たら準備完了、設定へ  
@@ -102,22 +120,23 @@ PWA（プログレッシブウェブアプリ）に対応しアプリとして�
 # 視聴機能
 Legacy WebUIの配信機能を移植し、以下の事が可能となりました  
 * HLSでの配信
+* TS-Live!モジュールでMPEG2を直接再生
 * web-bmlによるデータ放送の表示
 * aribb24.jsによる字幕表示
-* 実況の表示 (録画用アプリにTvTestの使用時のみ)
+* 実況の表示
 
-過去の機能と仕様などが変わり互換性はありませんので再度設定をしてください  
-[EDCB Legacy WebUIについて](http://localhost:5510/legacy/about.html)にも目を通してください  
+[EDCB Legacy WebUIについて](http://localhost:5510/legacy/about.html)にも目を通してください
 
 ### 注意
 * トランスコードオプションは`XCODE_OPTIONS.lua`を編集してください
-* リモコン、コメントボタンを長押しすると各データの常時取得が有効になります
-* **データ放送がリセットできない**ため、一度データ放送を読み込みチャンネルを変更すると、リモコンボタンは無効化されます  
-上記の理由から常時取得有効中でも、リモコンボタンを一度押すまでデータ放送は読み込まれません
-* データ放送のNVRAM設定はLegacy WebUIと共通です、今のところ Legacy WebUI の[NVRAM設定](http://localhost:5510/legacy/nvram.html)でできます
-* Legacy WebUIで可能な`.pscファイル`による表示は現在非対応としています（要望があったら対応するかもしれません）  
-* プレイヤーの速度設定はブラウザ側の機能を使用しています  
-倍速読み込みはトランスコードオプションの`filterFast`を有効にします
+* コメントボタンを長押しすると常時取得が有効になります
+* ~~**データ放送がリセットできない**ため、一度データ放送を読み込みチャンネルを変更すると、リモコンボタンは無効化されます  
+上記の理由から常時取得有効中でも、リモコンボタンを一度押すまでデータ放送は読み込まれません~~  
+力技で対応しました
+* データ放送のNVRAM設定はLegacy WebUIと共通です、今のところ Legacy WebUI の[NVRAM設定](http://localhost:5510/legacy/nvram.html)でできます  
+初期値は`HttpPublic.ini`から指定できるようになりました
+* 実況ログ表示機能は動作未確認、動いてたらラッキー  
+* 倍速読み込みはトランスコードオプションの`filterFast`を有効にします
 
 
 ## リモート視聴
@@ -200,8 +219,7 @@ URLに`?webPanel=`を追加すると無駄をそぎ落としたデザインに�
 ### Framework & JavaScriptライブラリ
 
 * [Material Design Lite](http://www.getmdl.io)
-* [Material icons](https://design.google.com/icons/)
-* [dialog-polyfill](https://github.com/GoogleChrome/dialog-polyfill)
+* [Material Symbols](https://github.com/google/material-design-icons)
 * [jQuery](https://jquery.com)
 * [jQuery UI](https://jqueryui.com)
 * [jQuery UI Touch Punch](http://touchpunch.furf.com)
@@ -209,6 +227,7 @@ URLに`?webPanel=`を追加すると無駄をそぎ落としたデザインに�
 * [jquery.hammer.js](https://github.com/hammerjs/jquery.hammer.js)
 * [hls.js](https://github.com/video-dev/hls.js)
 * [web_bml_play_ts.js](https://github.com/xtne6f/web-bml)
+* [TS-Live!](https://github.com/xtne6f/ts-live)
 * [aribb24.js](https://github.com/xtne6f/aribb24.js)
 * [danmaku.js](https://github.com/DIYgod/DPlayer)
 
