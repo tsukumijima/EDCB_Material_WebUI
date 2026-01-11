@@ -1,6 +1,7 @@
 $(function(){
 	const $audio1 = $('#audio1');
 	const $audio2 = $('#audio2');
+	const $audios = $audio1.add($audio2);
 	const $audioText1 = $('#audio1~label:last');
 	const $audioText2 = $('#audio2~label:last');
 	const audioMemu = (audio, update) => {
@@ -13,7 +14,7 @@ $(function(){
 		}else if (audio.length && audio[0].component_type == 2){
 			//デュアルモノ
 			$audios.attr('disabled', false);
-			const text = audio[0].text.split('\n');
+			let text = audio[0].text.split('\n');
 			if (text.length < 2) text = ['日本語','英語'];
 			$audioText1.text(`[二] ${text[0]}`);
 			$audioText2.text(`[二] ${text[1]}`);

@@ -232,8 +232,8 @@ $(function(){
 
 			$vid.removeClass('is-loading');
 			$('.is_cast').removeClass('is_cast playing');
-			const errorcode = ts.networkState == 3  ? 5 : ts.error.code;
-			Snackbar(`Error : ${[ts.error.message,'MEDIA_ERR_ABORTED','MEDIA_ERR_NETWORK','MEDIA_ERR_DECODE','MEDIA_ERR_SRC_NOT_SUPPORTED','NETWORK_NO_SOURCE'][errorcode]}`);
+			const errorcode = ts.networkState == 3 ? 5 : (ts.error ? ts.error.code : 0);
+			Snackbar(`Error : ${[ts.error ? ts.error.message : 'UNKNOWN','MEDIA_ERR_ABORTED','MEDIA_ERR_NETWORK','MEDIA_ERR_DECODE','MEDIA_ERR_SRC_NOT_SUPPORTED','NETWORK_NO_SOURCE'][errorcode]}`);
 		},
 		volumechange(){
 			vid.onVolumeChange();

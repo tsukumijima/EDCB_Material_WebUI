@@ -49,7 +49,7 @@ function save(post)
   edcb.WritePrivateProfile('BACKGROUND', 'drama', mg.get_var(post, 'drama'),INI)
   edcb.WritePrivateProfile('BACKGROUND', 'music', mg.get_var(post, 'music'),INI)
   edcb.WritePrivateProfile('BACKGROUND', 'variety', mg.get_var(post, 'variety'),INI)
-  edcb.WritePrivateProfile('BACKGROUND', 'movie', mg.get_var(post, 'movie' or ''),INI)
+  edcb.WritePrivateProfile('BACKGROUND', 'movie', mg.get_var(post, 'movie'),INI)
   edcb.WritePrivateProfile('BACKGROUND', 'anime', mg.get_var(post, 'anime'),INI)
   edcb.WritePrivateProfile('BACKGROUND', 'documentary', mg.get_var(post, 'documentary'),INI)
   edcb.WritePrivateProfile('BACKGROUND', 'theater', mg.get_var(post, 'theater'),INI)
@@ -318,13 +318,13 @@ ct.main=ct.main..'<div class="mdl-cell mdl-cell--12-col mdl-grid mdl-grid--no-sp
   ..'<div class="mdl-layout-spacer"></div><div><input class="bgset" type="color" name="theater" value="'..theater..'" for=".cont-10"></div></div>\n'
 
   ..'<div class="cont-11 mdl-cell mdl-cell--4-col mdl-grid"><div class="mdl-cell--middle">趣味/教育</div>\n'
-  ..'<div class="mdl-layout-spacer"></div><div><input class="bgset" type="color" name="education" value="'..education..'" for=".11"></div></div>\n'
+  ..'<div class="mdl-layout-spacer"></div><div><input class="bgset" type="color" name="education" value="'..education..'" for=".cont-11"></div></div>\n'
 
   ..'<div class="cont-12 mdl-cell mdl-cell--4-col mdl-grid"><div class="mdl-cell--middle">福祉</div>\n'
-  ..'<div class="mdl-layout-spacer"></div><div><input class="bgset" type="color" name="welfare" value="'..welfare..'" for=".12"></div></div>\n'
+  ..'<div class="mdl-layout-spacer"></div><div><input class="bgset" type="color" name="welfare" value="'..welfare..'" for=".cont-12"></div></div>\n'
 
   ..'<div class="cont-13 mdl-cell mdl-cell--4-col mdl-grid"><div class="mdl-cell--middle">拡張</div>\n'
-  ..'<div class="mdl-layout-spacer"></div><div><input class="bgset" type="color" name="extension" value="'..extension..'" for=".13"></div></div>\n'
+  ..'<div class="mdl-layout-spacer"></div><div><input class="bgset" type="color" name="extension" value="'..extension..'" for=".cont-13"></div></div>\n'
 
   ..'<div class="cont-16 mdl-cell mdl-cell--4-col mdl-grid"><div class="mdl-cell--middle">その他</div>\n'
   ..'<div class="mdl-layout-spacer"></div><div><input class="bgset" type="color" name="other" value="'..other..'" for=".16"></div></div>\n'

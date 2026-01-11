@@ -40,8 +40,8 @@ if preset then
       edcb.WritePrivateProfile('search', 'list', table.concat(presetList, ',')..',', INI)
     end
 
-    edcb.WritePrivateProfile(_preset, 'andKey', (GetVarInt(post,'caseFlag') and 'C!{999}' or '')..mg.get_var(post,'andKey'),INI)
-    edcb.WritePrivateProfile(_preset, 'notKey', mg.get_var(post,'notKey'),INI)
+    edcb.WritePrivateProfile(_preset, 'andKey', (GetVarInt(post,'caseFlag') and 'C!{999}' or '')..(mg.get_var(post,'andKey') or ''),INI)
+    edcb.WritePrivateProfile(_preset, 'notKey', mg.get_var(post,'notKey') or '',INI)
     edcb.WritePrivateProfile(_preset, 'regExpFlag', GetVarInt(post,'regExpFlag'),INI)
     edcb.WritePrivateProfile(_preset, 'titleOnlyFlag', GetVarInt(post,'titleOnlyFlag'),INI)
     edcb.WritePrivateProfile(_preset, 'aimaiFlag', GetVarInt(post,'aimaiFlag'),INI)
@@ -54,7 +54,7 @@ if preset then
     edcb.WritePrivateProfile(_preset, 'chkDurationMin', GetVarInt(post,'chkDurationMin'),INI)
     edcb.WritePrivateProfile(_preset, 'chkDurationMax', GetVarInt(post,'chkDurationMax'),INI)
     edcb.WritePrivateProfile(_preset, 'days', GetVarInt(post,'days'),INI)
-    edcb.WritePrivateProfile(_preset, 'dateList', mg.get_var(post,'dateList'),INI)
+    edcb.WritePrivateProfile(_preset, 'dateList', mg.get_var(post,'dateList') or '',INI)
     edcb.WritePrivateProfile(_preset, 'lock', GetVarInt(post,'lock'),INI)
     for i=0,10000 do
       v=mg.get_var(post, 'contentList', i)

@@ -10,24 +10,26 @@ for i,v in ipairs(a) do
     ..v.tunerName..'</tunerName><reserveList>')
   for j,w in ipairs(v.reserveList) do
     r=edcb.GetReserveData(w)
-    size=GetPredictionSize(r)
-    table.insert(ct, '<reserveinfo><ID>'
-    ..r.reserveID..'</ID><title>'
-    ..r.title..'</title><startDate>'
-    ..string.format('%d/%02d/%02d</startDate><startTime>%02d:%02d:%02d</startTime><startDayOfWeek>',
-                    r.startTime.year, r.startTime.month, r.startTime.day, r.startTime.hour, r.startTime.min, r.startTime.sec)
-    ..(r.startTime.wday-1)..'</startDayOfWeek><duration>'
-    ..r.durationSecond..'</duration><service_name>'
-    ..r.stationName..'</service_name><ONID>'
-    ..r.onid..'</ONID><TSID>'
-    ..r.tsid..'</TSID><SID>'
-    ..r.sid..'</SID><eventID>'
-    ..r.eid..'</eventID><comment>'
-    ..r.comment..'</comment><overlapMode>'
-    ..r.overlapMode..'</overlapMode><size>'
-    ..(size and ('%.1fGB'):format(size/1024/1024/1024) or '-')..'</size>'
-    ..XmlRecSetting(r.recSetting)
-    ..'</reserveinfo>\r\n')
+    if r then
+      size=GetPredictionSize(r)
+      table.insert(ct, '<reserveinfo><ID>'
+      ..r.reserveID..'</ID><title>'
+      ..r.title..'</title><startDate>'
+      ..string.format('%d/%02d/%02d</startDate><startTime>%02d:%02d:%02d</startTime><startDayOfWeek>',
+                      r.startTime.year, r.startTime.month, r.startTime.day, r.startTime.hour, r.startTime.min, r.startTime.sec)
+      ..(r.startTime.wday-1)..'</startDayOfWeek><duration>'
+      ..r.durationSecond..'</duration><service_name>'
+      ..r.stationName..'</service_name><ONID>'
+      ..r.onid..'</ONID><TSID>'
+      ..r.tsid..'</TSID><SID>'
+      ..r.sid..'</SID><eventID>'
+      ..r.eid..'</eventID><comment>'
+      ..r.comment..'</comment><overlapMode>'
+      ..r.overlapMode..'</overlapMode><size>'
+      ..(size and ('%.1fGB'):format(size/1024/1024/1024) or '-')..'</size>'
+      ..XmlRecSetting(r.recSetting)
+      ..'</reserveinfo>\r\n')
+    end
   end
   table.insert(ct, '</reserveList></tuner>')
 end

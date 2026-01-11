@@ -53,7 +53,7 @@ class TvGuide{
 	#lastTime = performance.now();
 	#moment(time){
 		if (time - this.#lastTime < this.#fps){
-			this.#momentID = requestAnimationFrame(() => this.#moment());
+			this.#momentID = requestAnimationFrame((t) => this.#moment(t));
 			return;
 		}
 		this.#container.scrollBy(this.#deltaX, this.#deltaY);
@@ -63,7 +63,7 @@ class TvGuide{
 		this.#lastTime = time;
 
 		if (Math.abs(this.#deltaX)<this.#limit && Math.abs(this.#deltaY)<this.#limit) return;
-		this.#momentID = requestAnimationFrame(() => this.#moment());
+		this.#momentID = requestAnimationFrame((t) => this.#moment(t));
 	}
 	#clearMoment(){
 		if (!this.#momentID) return;
@@ -104,7 +104,7 @@ class TvGuide{
 			touched = false;
 			document.body.style.cursor = null;
 
-			this.#moment();
+			this.#moment(performance.now());
 			e.currentTarget.releasePointerCapture(e.pointerId);
 		});
 

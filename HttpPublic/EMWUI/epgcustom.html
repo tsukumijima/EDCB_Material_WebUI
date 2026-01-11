@@ -57,8 +57,8 @@ if preset then
   end
 
   for i=0,1000 do
-    v=edcb.GetPrivateProfile(_preset,'serviceList'..i,0,INI)
-    if v==0 then break end
+    v=edcb.GetPrivateProfile(_preset,'serviceList'..i,'0',INI)
+    if v=='0' then break end
     m={string.match(v, '^(%d+)%-(%d+)%-(%d+)$')}
     if #m==3 then
       table.insert(key.serviceList, {onid=0+m[1], tsid=0+m[2], sid=0+m[3]})
@@ -128,8 +128,8 @@ for i,v in ipairs(b)do
   end
 end
 interval=lastendTime and math.ceil((lastendTime-baseTime)/60/60) or MARGIN_HOUR+1
-MAX_ONE_MIN_PX=math.floor(ONE_MIN_PX*1.5+0.5)
 if interval>48 then ONE_MIN_PX=math.max(math.floor(ONE_MIN_PX/4),1) end
+MAX_ONE_MIN_PX=math.floor(ONE_MIN_PX*1.5+0.5)
 
 SERVICE={}
 for i,v in ipairs(edcb.GetServiceList() or {}) do
@@ -203,9 +203,9 @@ for i,v in ipairs(st) do
   total=0
   for j,w in ipairs(v) do
     startTime=TimeWithZone(w.startTime)
-    startPx=math.min(math.floor(startTime-baseTime)/60, 60*interval)
+    startPx=math.min(math.floor((startTime-baseTime)/60), 60*interval)
     endTime=w.durationSecond and startTime+w.durationSecond or startTime+10*3600 --終了時間未定
-    endPx=math.min(math.floor(endTime-baseTime)/60, 60*interval)
+    endPx=math.min(math.floor((endTime-baseTime)/60), 60*interval)
     if startPx-lastPx>0 then
       table.insert(ctt, '<div class="cell" data-endtime="'..(startTime-9*3600)..'" style="--h:'..(startPx-lastPx)..'"><div class="content-wrap nothing"><div class="content"></div></div></div>\n')
       total=total+startPx-lastPx
