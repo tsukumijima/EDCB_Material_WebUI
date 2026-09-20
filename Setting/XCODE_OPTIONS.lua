@@ -13,18 +13,20 @@
 --xcoder:トランスコーダーのToolsフォルダからの相対パス。'|'で複数候補を指定可。見つからなければ最終候補にパスが通っているとみなす
 --       Windows以外では".exe"が除去されて最終候補のみ参照される
 --option:$OUTPUTは必須、再生時に適宜置換される。標準入力からMPEG2-TSを受け取るようにオプションを指定する
---※EMWUIでの倍速再生はHTMLMediaElement APIを使用しているため以下の設定は直接パラメータを指定等しない限り呼び出されない
+--poster:【※未使用】初期画像のサイズとメッセージ。省略時は'1280x720,Loading...'
 --filter(Cinema):等速再生用、filterCinemaは未定義でもよい。特別に':'とするとトランスコードを省略してそのまま出力する
 --filter*FastFunc:倍速再生用、未定義でもよい。倍率に応じたオプションを返す関数を指定する
 --editorFast:単独で倍速再生にできないトランスコーダーの手前に置く編集コマンド。指定方法はxcoderと同様
 --editorOptionFastFunc:標準入出力ともにMPEG2-TSで倍速再生になるようにオプションを返す関数を指定する
 --autoCinema:TS-Live!方式専用。Cinema(逆テレシネ)モードを自動切り替え
+--deinterlace:TS-Live!方式専用。デインタレース方式。'none'か'yadif'か'bwdif'
 XCODE_OPTIONS={
   {
     --ffmpegの例。-b:vでおおよその最大ビットレートを決め、-qminで動きの少ないシーンのデータ量を節約する
     name='720p/h264/ffmpeg',
     xcoder='ffmpeg\\ffmpeg.exe|ffmpeg.exe',
     option='-f mpegts -analyzeduration 1M -i - -map 0:v:0? -vcodec libx264 -flags:v +cgop -profile:v main -level 31 -b:v 1888k -qmin 23 -maxrate 4M -bufsize 4M -preset veryfast $FILTER -s 1280x720 -map 0:a:$AUDIO -acodec aac -ac 2 -b:a 160k $CAPTION -max_interleave_delta 500k $OUTPUT',
+    poster='1280x720,Loading...',
     filter='-g 120 -vf yadif=0:-1:1',
     filterCinema='-g 96 -vf pullup -r 24000/1001',
     filterFastFunc=function(rate) return '-g 120 -vf yadif=0:-1:1,setpts=PTS/'..rate..' -af atempo='..rate..' -bsf:s setts=ts=TS/'..rate end,
@@ -88,7 +90,7 @@ XCODE_OPTIONS={
     --NVEncCの例。倍速再生にはffmpegも必要
     name='720p/h264/NVEncC',
     xcoder='NVEncC\\NVEncC64.exe|NVEncC\\NVEncC.exe|NVEncC64.exe|nvencc.exe',
-    option='--input-format mpegts --input-analyze 1 --input-probesize 4M -i - --avhw --avsync forcecfr --profile main --level 4.1 --vbr 3936 --qp-min 23:26:30 --max-bitrate 8192 --vbv-bufsize 8192 --preset default $FILTER --output-res 1280x720 --audio-stream $AUDIO?:stereo --audio-codec $AUDIO?aac --audio-bitrate $AUDIO?160 --audio-disposition $AUDIO?default $CAPTION -m max_interleave_delta:500k $OUTPUT',
+    option='--input-format mpegts --input-analyze 1 --input-probesize 4M -i - --avhw --avsync forcecfr --profile main --level 4.1 --vbr 3936 --qp-min 23:26:30 --max-bitrate 8192 --vbv-bufsize 8192 --preset default $FILTER --output-res 1280x720 --audio-stream $AUDIO?:stereo --audio-codec $AUDIO?aac --audio-bitrate $AUDIO?160 --audio-disposition $AUDIO?default $CAPTION -m max_interleave_delta:500k --lowlatency $OUTPUT',
     audioStartAt=1,
     filter='--gop-len 120 --interlace tff --vpp-deinterlace normal',
     filterCinema='--gop-len 96 --interlace tff --vpp-deinterlace normal --vpp-decimate',
@@ -105,7 +107,7 @@ XCODE_OPTIONS={
     --QSVEncCの例。倍速再生にはffmpegも必要
     name='720p/h264/QSVEncC',
     xcoder='QSVEncC\\QSVEncC64.exe|QSVEncC\\QSVEncC.exe|QSVEncC64.exe|qsvencc.exe',
-    option='--input-format mpegts --input-analyze 1 --input-probesize 4M -i - --avhw --avsync forcecfr --profile main --level 4.1 --qvbr 3936 --qvbr-quality 26 --fallback-rc --max-bitrate 8192 --vbv-bufsize 8192 $FILTER --output-res 1280x720 --audio-stream $AUDIO?:stereo --audio-codec $AUDIO?aac --audio-bitrate $AUDIO?160 --audio-disposition $AUDIO?default $CAPTION -m max_interleave_delta:500k $OUTPUT',
+    option='--input-format mpegts --input-analyze 1 --input-probesize 4M -i - --avhw --avsync forcecfr --profile main --level 4.1 --qvbr 3936 --qvbr-quality 26 --fallback-rc --max-bitrate 8192 --vbv-bufsize 8192 $FILTER --output-res 1280x720 --audio-stream $AUDIO?:stereo --audio-codec $AUDIO?aac --audio-bitrate $AUDIO?160 --audio-disposition $AUDIO?default $CAPTION -m max_interleave_delta:500k --lowlatency $OUTPUT',
     audioStartAt=1,
     filter='--gop-len 120 --interlace tff --vpp-deinterlace normal',
     filterCinema='--gop-len 96 --interlace tff --vpp-deinterlace normal --vpp-decimate',
@@ -135,7 +137,7 @@ XCODE_OPTIONS={
     --QSVEncCの例。HEVC(未対応環境多め)。倍速再生にはffmpegも必要
     name='720p/hevc/QSVEncC',
     xcoder='QSVEncC\\QSVEncC64.exe|QSVEncC\\QSVEncC.exe|QSVEncC64.exe|qsvencc.exe',
-    option='--input-format mpegts --input-analyze 1 --input-probesize 4M -i - --avhw --avsync forcecfr -c hevc --profile main --level 4.1 --qvbr 3936 --qvbr-quality 26 --fallback-rc --max-bitrate 8192 --vbv-bufsize 8192 $FILTER --output-res 1280x720 --audio-stream $AUDIO?:stereo --audio-codec $AUDIO?aac --audio-bitrate $AUDIO?160 --audio-disposition $AUDIO?default $CAPTION -m max_interleave_delta:500k $OUTPUT',
+    option='--input-format mpegts --input-analyze 1 --input-probesize 4M -i - --avhw --avsync forcecfr -c hevc --profile main --level 4.1 --qvbr 3936 --qvbr-quality 26 --fallback-rc --max-bitrate 8192 --vbv-bufsize 8192 $FILTER --output-res 1280x720 --audio-stream $AUDIO?:stereo --audio-codec $AUDIO?aac --audio-bitrate $AUDIO?160 --audio-disposition $AUDIO?default $CAPTION -m max_interleave_delta:500k --lowlatency $OUTPUT',
     audioStartAt=1,
     filter='--gop-len 120 --interlace tff --vpp-deinterlace normal',
     filterCinema='--gop-len 96 --interlace tff --vpp-deinterlace normal --vpp-decimate',
@@ -152,7 +154,7 @@ XCODE_OPTIONS={
     --VCEEncCの例。倍速再生にはffmpegも必要。あまり良い例ではない。ffmpegのh264_amfのほうが安定している雰囲気
     name='720p/h264/VCEEncC',
     xcoder='VCEEncC\\VCEEncC64.exe|VCEEncC\\VCEEncC.exe|VCEEncC64.exe|vceencc.exe',
-    option='--input-format mpegts --input-analyze 1 --input-probesize 4M -i - --avsw --avsync forcecfr --profile main --level 4.1 --vbr 3936 --qp-min 23:26:30 --max-bitrate 8192 --vbv-bufsize 8192 --preset balanced $FILTER --output-res 1280x720 --audio-stream $AUDIO?:stereo --audio-codec $AUDIO?aac --audio-bitrate $AUDIO?160 --audio-disposition $AUDIO?default $CAPTION -m max_interleave_delta:500k $OUTPUT',
+    option='--input-format mpegts --input-analyze 1 --input-probesize 4M -i - --avsw --avsync forcecfr --profile main --level 4.1 --vbr 3936 --qp-min 23:26:30 --max-bitrate 8192 --vbv-bufsize 8192 --preset balanced $FILTER --output-res 1280x720 --audio-stream $AUDIO?:stereo --audio-codec $AUDIO?aac --audio-bitrate $AUDIO?160 --audio-disposition $AUDIO?default $CAPTION -m max_interleave_delta:500k --lowlatency $OUTPUT',
     audioStartAt=1,
     filter='--gop-len 120 --interlace tff --vpp-afs preset=default',
     filterCinema='--gop-len 96 --interlace tff --vpp-afs preset=cinema,24fps=true',
@@ -166,10 +168,24 @@ XCODE_OPTIONS={
     outputHls={'m2t','-f mpegts -o -'},
   },
   {
+    --音声のみの例
+    name='Audio-only/ffmpeg',
+    xcoder='ffmpeg\\ffmpeg.exe|ffmpeg.exe',
+    option='-f mpegts -analyzeduration 1M -i - -vn $FILTER -map 0:a:$AUDIO -acodec aac -ac 2 -b:a 96k $CAPTION -max_interleave_delta 500k $OUTPUT',
+    poster='1280x720,Audio-only',
+    filter='',
+    filterFastFunc=function(rate) return '-af atempo='..rate..' -bsf:s setts=ts=TS/'..rate end,
+    captionNone='-sn',
+    captionHls='-map 0:s? -scodec copy',
+    output={'mp4','-f mp4 -movflags empty_moov -frag_duration 4M -'},
+    outputHls={'m2t','-f mpegts -'},
+  },
+  {
     --TS-Live!方式の例。そのまま転送。トランスコーダー不要(tsreadex.exeは必要)
     name='TS-Live!',
     tslive=true,
     autoCinema=true,
+    deinterlace='bwdif',
     xcoder='',
     option='',
     filter=':',
@@ -180,12 +196,14 @@ XCODE_OPTIONS={
 
 
 
---字幕表示のオプション https://github.com/monyone/aribb24.js#options
-ARIBB24_JS_OPTION=[=[
-  normalFont: '"Windows TV MaruGothic","Rounded M+ 1m for ARIB","Yu Gothic Medium",sans-serif',
-  forceStrokeColor: '#000000',
-  drcsReplacement: true,
-  useStroke: true,
+--字幕表示のオプション(JSON表記) https://github.com/monyone/aribb24.js#options
+ARIBB24_OPTION_JSON=[=[
+{
+  "normalFont":"'Windows TV MaruGothic','Rounded M+ 1m for ARIB','Kosugi Maru','Yu Gothic Medium',sans-serif",
+  "forceStrokeColor":"#000000",
+  "drcsReplacement":true,
+  "useStroke":true
+}
 ]=]
 
 
@@ -213,11 +231,14 @@ JK_CHANNELS={
   --[0x40065]=-1,
 }
 
---chatタグ表示前の置換(JavaScript)
-JK_CUSTOM_REPLACE=[=[
-  // 広告などを下コメにする
-  tag = tag.replace(/^<chat(?![^>]*? mail=)/, '<chat mail=""');
-  tag = tag.replace(/^(<chat[^>]*? premium="3"[^>]*?>\/nicoad )(\{[^<]*?"totalAdPoint":)(\d+)/, "$1$3$2");
-  tag = tag.replace(/^<chat(?=[^>]*? premium="3")([^>]*? mail=")([^>]*?>)\/nicoad (\d*)\{[^<]*?"message":("[^<]*?")[,}][^<]*/, '<chat align="right"$1shita small yellow $2$4($3pt)');
-  tag = tag.replace(/^<chat(?=[^>]*? premium="3")([^>]*? mail=")([^>]*?>)\/spi /, '<chat align="right"$1shita small white2 $2');
+--chatタグ表示前の置換リスト(JSON表記)
+--`tag=tag.replace(new RegExp(pattern,flags),replace)`をリストの順に処理する。flagsは省略可
+--広告などを下コメにする例
+JK_CUSTOM_REPLACE_JSON=[=[
+[
+  {"pattern":"^<chat(?![^>]*? mail=)", "replace":"<chat mail=\"\""},
+  {"pattern":"^(<chat[^>]*? premium=\"3\"[^>]*?>/nicoad )(\\{[^<]*?\"totalAdPoint\":)(\\d+)", "replace":"$1$3$2"},
+  {"pattern":"^<chat(?=[^>]*? premium=\"3\")([^>]*? mail=\")([^>]*?>)/nicoad (\\d*)\\{[^<]*?\"message\":(\"[^<]*?\")[,}][^<]*", "replace":"<chat align=\"right\"$1shita small yellow $2$4($3pt)"},
+  {"pattern":"^<chat(?=[^>]*? premium=\"3\")([^>]*? mail=\")([^>]*?>)/spi ", "replace":"<chat align=\"right\"$1shita small white2 $2"}
+]
 ]=]

@@ -1,6 +1,6 @@
-const danmaku = document.getElementById("danmaku-container");
 const video = document.getElementById("video");
 const $vid = $(video);
+const chap = new chapterTvt(video);
 
 //safariがis属性に対応しないための
 const vid = isSafari == 1 ? new TsLiveDatacast(video) : video;	//HTMLMediaElementメソッド用
@@ -54,6 +54,7 @@ const resetVid = () => {
 
 	$vid_meta.attr('src', '');
 	if (thumb) thumb.reset();
+	chap.reset();
 }
 
 const toggleTslive = () => {
@@ -71,7 +72,9 @@ const $titlebar = $('#titlebar');
 const $datacast = $('#datacast');
 const $remocon = $('.remote-control');
 const $jikkyo = $('#jikkyo');
-const addClassLoadding = () => $vid.addClass('is-loading');
+const $loading = $('#is-loading');
+const addClassLoadding = () => {$loading.removeClass('hidden');}
+chap.setSeek = val => $('.is_cast').data('canPlay') ? vid.currentTime = val : ts.setSeek(val, addClassLoadding);
 const loadMovie = ($e = $('.is_cast')) => {
 	const d = $e.data();
 	d.canPlay = d.path ? document.createElement('video').canPlayType(`video/${d.path.match(/[^\.]*$/)}`).length > 0 : false;
@@ -100,8 +103,8 @@ const loadMovie = ($e = $('.is_cast')) => {
 		$vid_meta.attr('src', `${path.replace(/\.[0-9A-Za-z]+$/,'')}.vtt`);
 		ts.loadSubData();
 	}else{
-		ts.loadSource(`${ROOT}api/${d.onid ? `view?n=${ts.nwtv}&id=${d.onid}-${d.tsid}-${d.sid}`
-		                            		: `xcode?${d.path ? `fname=${encodeURIComponent(d.path)}` : d.id ? `id=${d.id}` : d.reid ? `reid=${d.reid}` : ''}` }`);
+		ts.loadSource(`${ROOT}api/${d.id ? `view?n=${ts.nwtv}&id=${d.id}`
+										 : `xcode?${d.path ? `fname=${encodeURIComponent(d.path)}` : d.recid ? `recid=${d.recid}` : d.rid ? `rid=${d.rid}` : ''}${!d.okkake ? '&shiftable=1' : ''}` }`);
 
 		if (d.meta){
 			if (d.meta.duration){
@@ -116,9 +119,9 @@ const loadMovie = ($e = $('.is_cast')) => {
 			if (d.meta.audio) $audios.attr('disabled', d.meta.audio == 1);
 		}
 	}
+	chap.setChapters(d.chapters, d.meta&&(d.meta.duration));
 
-	$titlebar.html(d.name || (!(`${d.onid}-${d.tsid}-${d.sid}-${d.eid}` in Info.EventInfo) ? '' :
-		`${ConvertService(Info.EventInfo[`${d.onid}-${d.tsid}-${d.sid}-${d.eid}`])}<span>${ConvertTitle(Info.EventInfo[`${d.onid}-${d.tsid}-${d.sid}-${d.eid}`].title)}</span>`));
+	$titlebar.html(d.name || (!d.epg ? '' : `${ConvertService(d.epg)}<span>${ConvertTitle(d.epg.title)}</span>`));
 }
 
 const $currentTime_duration = $('.currentTime,.duration');
@@ -157,7 +160,7 @@ const setbmlBrowserSize = () => {
 	bmlBrowserSetVisibleSize(width,height);
 }
 
-const initRemocon = remocon => {
+ts.setRemoconEvent = remocon => {
 	remocon.querySelectorAll('.mdl-button,.mdl-icon-toggle').forEach(e => componentHandler.upgradeElement(e));
 
 	remocon.transform = {X: 0, Y: 0};
@@ -230,7 +233,7 @@ $(function(){
 		error(){
 			if ($vid.attr('src') == '') return;
 
-			$vid.removeClass('is-loading');
+			$loading.addClass('hidden');
 			$('.is_cast').removeClass('is_cast playing');
 			const errorcode = ts.networkState == 3 ? 5 : (ts.error ? ts.error.code : 0);
 			Snackbar(`Error : ${[ts.error ? ts.error.message : 'UNKNOWN','MEDIA_ERR_ABORTED','MEDIA_ERR_NETWORK','MEDIA_ERR_DECODE','MEDIA_ERR_SRC_NOT_SUPPORTED','NETWORK_NO_SOURCE'][errorcode]}`);
@@ -243,43 +246,42 @@ $(function(){
 		//ratechange(){if (sessionStorage.getItem('autoplay') == 'true') vid.defaultPlaybackRate = vid.playbackRate;},
 		canplay(){
 			hideBar(2000);
-			$vid.removeClass('is-loading');
+			$loading.addClass('hidden');
 
-			if (!vid.doNotAutoplay){
-				const promise = vid.play();
-				//自動再生ポリシー対策 https://developer.chrome.com/blog/autoplay?hl=ja
-				if (promise !== undefined){
-					promise.catch(error => {
-						vid.muted = true;
-						vid.play();
-						vid.onVolumeChange();
-						document.querySelector('#volume').MaterialSlider.change(0);
-						$(document).one('click', () => {
-							vid.muted = false;
-							document.querySelector('#volume').MaterialSlider.change(vid.volume);
-						});
+			const promise = vid.play();
+			//自動再生ポリシー対策 https://developer.chrome.com/blog/autoplay?hl=ja
+			if (promise !== undefined){
+				promise.catch(error => {
+					vid.muted = true;
+					vid.play();
+					vid.onVolumeChange();
+					document.querySelector('#volume').MaterialSlider.change(0);
+					$(document).one('click', () => {
+						vid.muted = false;
+						document.querySelector('#volume').MaterialSlider.change(vid.volume);
 					});
-				}
+				});
 			}
 			const d = $('.is_cast').data();
 			if (!d.canPlay) return;
 
 			$duration.text(getVideoTime(vid.duration));
 			$seek.attr('max', vid.duration);
+			$('#chapMaker-container').css('--dur', `${vid.duration}`);
 		},
 		timeupdate(){
 			const d = $('.is_cast').data();
 			if (!d) return;
 
 			let currentTime;
-			if (d.onid){
+			if (d.id){
 				currentTime = (Date.now() - d.meta.starttime) / 1000;
 				seek.MaterialProgress.setProgress(currentTime / d.meta.duration * 100);
 				$live.toggleClass('live', vid.duration - vid.currentTime < 2);
-			}else if (d.path || d.id || d.reid){
+			}else if (d.path || d.recid || d.rid){
 				if (seek.seeking) return;
 
-				currentTime = vid.currentTime * (vid.fast || 1) + (vid.ofssec || 0);
+				currentTime = vid.fixedCurrentTime || vid.currentTime;
 				if (!vid.offset) seek.MaterialSlider.change(currentTime);
 			}
 			$currentTime.text(getVideoTime(currentTime));
@@ -302,7 +304,7 @@ $(function(){
 		params.delete('id');
 		params.delete('play');
 		history.replaceState(null,null,`${params.size>0?`?${params.toString()}`:location.pathname}`);
-		$vid.removeClass('is-loading');
+		$loading.addClass('hidden');
 		$epginfo.addClass('hidden');
 		$('.is_cast').removeClass('is_cast');
 		$('.playing').removeClass('playing');
@@ -340,7 +342,7 @@ $(function(){
 		pointermove(e){
 			if (!thumb || this.disabled) return;
 
-			thumb.seek(Math.min(Math.max(0,$(this).attr('max')*e.offsetX/this.clientWidth),$(this).attr('max')), e.offsetX/this.clientWidth*100);
+			thumb.seek(Math.min(Math.max(0,$(this).attr('max')*(e.offsetX-6)/(this.clientWidth-12)),$(this).attr('max')), e.offsetX/this.clientWidth*100);
 		},
 		pointerup(){
 			this.seeking = false;
@@ -495,14 +497,13 @@ $(function(){
 
 
 	hideBar();
-	const $player_container = $('.player-container>*').not('.remote-control');
 	if (!isMobile && !isTouch){
-		$player_container.hover(() => {
+		$player.hover(() => {
 			stopTimer();
 			$playerUI.addClass('is-visible');
 		}, () => hideBar());
 
-		$player_container.mousemove(() => {
+		$player.mousemove(() => {
 			stopTimer();
 			hideBar(3000);
 			$playerUI.addClass('is-visible');
@@ -511,7 +512,7 @@ $(function(){
 		$('#playerUI').prepend('<div id="center">');
 		$('#ctl-button .ctl-button').prependTo('#center');
 		$('#volume-container').addClass('hidden');
-		$player_container.click(() => {
+		$player.click(() => {
 			$('#playerUI').addClass('is-visible');
 			stopTimer();
 			hideBar(3000);
@@ -579,6 +580,17 @@ $(function(){
 
 	$('#comment-control').hover(e => $(e.currentTarget).addClass('is-visible'), e => $(e.currentTarget).removeClass('is-visible'));
 
+	$('#jikkyo-setting').click(e => $('#jikkyo-config').toggle());
+	$('#jikkyo-opacity input').on({input:e => {
+		const val = $(e.currentTarget).val();
+		$('#jikkyo-opacity span').text(val);
+		ts.jikkyo.danmaku.opacity(val)
+	}});
+	$('#jikkyo-fontsize input').on({input:e => {
+		const val = $(e.currentTarget).val();
+		$('#jikkyo-fontsize span').text(val);
+		ts.jikkyo.danmaku.options.height = val;
+	}});
 	$('#comm').focus(() => $('#comment-control').addClass('is-focused')
 		).blur(() => $('#comment-control').removeClass('is-focused')
 		).change(e => $('#comment-control').toggleClass('is-dirty', $(e.currentTarget).val()!='')
@@ -602,6 +614,8 @@ $(function(){
 		vid.loaded = true;
 		setTimeout(setbmlBrowserSize, 100);
 	});
+	$('#seek').on('mdl-componentupgraded', () => $('#seek').after($('#chapMaker-container')));
+
 
 	//準備できてから再生開始
 	if (!vid.readyToAutoPlay) return;

@@ -7,18 +7,18 @@ webPanel=mg.get_var(mg.request_info.query_string,'webpanel')
 
 ct={
   title='放送中',
-  video='live',
+  --video='live',
   js='<script src="js/onair.js'..Version('onair')..'"></script>\n',
   fixedTabs=true,
   menu='<li class="mdl-menu__item" id="forced" data-ctok="'..CsrfToken('tvcast')..'">強制停止</li>'
-    ..'<li id="menu_popup" class="ext mdl-menu__item"><label for="open_popup" class="mdl-layout-spacer">ポップアップ</label><span><label class="mdl-switch mdl-js-switch" for="open_popup"><input type="checkbox" id="open_popup" class="mdl-switch__input"></label></span></li>\n'
-    ..'<li id="menu_apk" class="ext mdl-menu__item hidden"><label for="apk" class="mdl-layout-spacer">アプリで開く</label><span><label class="mdl-switch mdl-js-switch" for="apk"><input type="checkbox" id="apk" class="mdl-switch__input"></label></span></li>\n'
-    ..'<li id="menu_quality" class="ext mdl-menu__item hidden"><button><span class="mdl-layout-spacer">画質</span><span><i class="material-icons">navigate_next</i></button></li>\n'
+    --..'<li id="menu_popup" class="ext mdl-menu__item"><label for="open_popup" class="mdl-layout-spacer">ポップアップ</label><span><label class="mdl-switch mdl-js-switch" for="open_popup"><input type="checkbox" id="open_popup" class="mdl-switch__input"></label></span></li>\n'
+    --..'<li id="menu_apk" class="ext mdl-menu__item hidden"><label for="apk" class="mdl-layout-spacer">アプリで開く</label><span><label class="mdl-switch mdl-js-switch" for="apk"><input type="checkbox" id="apk" class="mdl-switch__input"></label></span></li>\n'
+    --..'<li id="menu_quality" class="ext mdl-menu__item hidden"><button><span class="mdl-layout-spacer">画質</span><span><i class="material-icons">navigate_next</i></button></li>\n'
     ..'<li id="menu_apk" class="ext mdl-menu__item"><label for="subCH" class="mdl-layout-spacer">サブチャンネル</label><span><label class="mdl-switch mdl-js-switch" for="subCH"><input type="checkbox" id="subCH" class="mdl-switch__input"></label></span></li>\n'
 }
 
 if webPanel then
-  ct.css='<style>.mdl-layout__header{min-height:48px;}.mdl-layout__header-row,.mdl-layout__drawer-button{display:none;}</style>'
+  ct.css='.mdl-layout__header{min-height:48px;}.mdl-layout__header-row,.mdl-layout__drawer-button{display:none;}\n'
 end
 
 rt={}
@@ -93,12 +93,7 @@ end
 for i,v in ipairs(CustomServiceList()) do
   if (ONESEG or not v.partialReceptionFlag) then
     table.insert(NetworkList[NetworkIndex(v.onid, v.partialReceptionFlag)],
-      '<li class="onair mdl-list__item mdl-list__item--'..(webPanel and 'two' or 'three')..'-line'..(v.subCh and ' subCH hidden' or '')
-        ..'" data-onid="'..v.onid
-        ..'" data-tsid="'..v.tsid
-        ..'" data-sid="'..v.sid
-
-        ..'">\n'
+      '<li class="onair mdl-list__item mdl-list__item--'..(webPanel and 'two' or 'three')..'-line'..(v.subCh and ' subCH hidden' or '')..'" data-id="'..v.onid..'-'..v.tsid..'-'..v.sid..'">\n'
 
         ..'<span class="mdl-list__item-primary-content">'
         ..'<i class="mdl-list__item-avatar material-icons mdl-color--primary"'..(Logo(v.onid,v.sid) and ' style="background-image:url('..PathToRoot()..'api/logo?onid='..v.onid..'&amp;sid='..v.sid..');">' or '>tv')..'</i>'..v.service_name

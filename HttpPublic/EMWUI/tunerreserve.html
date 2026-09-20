@@ -4,9 +4,9 @@ dofile(mg.script_name:gsub('[^\\/]*$','')..'util.lua')
 ct={title='チューナー別',tab=''}
 
 if (not SIDE_PANEL) then
-  ct.css='<style>.partially{background:'..edcb.GetPrivateProfile('BACKGROUND','partially','#FFFF00',INI)
+  ct.css='.partially{background:'..edcb.GetPrivateProfile('BACKGROUND','partially','#FFFF00',INI)
   ..';}.shortage{background:'..edcb.GetPrivateProfile('BACKGROUND','shortage','#FF5252',INI)
-  ..';}</style>\n'
+  ..';}\n'
   ct.js='<script>const ctok=\''..CsrfToken('setreserve')..'\';</script>\n'
 end
 
@@ -52,15 +52,16 @@ for i,v in ipairs(edcb.GetTunerReserveAll()) do
         ..(w.recSetting.recMode==5 and ' disabled' or w.overlapMode==1 and ' partially' or w.overlapMode==2 and ' shortage' or '')
         ..'" data-startTime="'..(w.durationSecond and (TimeWithZone(w.startTime,9*3600)-(w.recSetting.startMargin or 0))*1000 or '')
         ..'" data-endTime="'..(w.durationSecond and (TimeWithZone(w.startTime,9*3600)+w.durationSecond+(w.recSetting.endMargin or 0)+20)*1000 or 0)..'" '
-        ..(SIDE_PANEL and 'data-onid="'..w.onid..'" data-tsid="'..w.tsid..'" data-sid="'..w.sid..'" data-eid="'..w.eid
-                       or 'data-href="reserveinfo.html?id='..w.reserveID..'&amp;tuner=&amp;page='..page)..'">'
+        ..'" data-id="'..(w.eid == 65535 and w.reserveID..'" data-program="true' or w.onid..'-'..w.tsid..'-'..w.sid..'-'..w.eid)
+        ..'" data-rid="'..w.reserveID
+        ..'">'
 
         ..'\n <td class="flag mdl-data-table__cell--non-numeric" data-id="'..w.reserveID..'"><span><label for="reserve'..w.reserveID..'" class="mdl-switch mdl-js-switch"><input id="reserve'..w.reserveID..'" class="mdl-switch__input"'..Checkbox(w.recSetting.recMode~=5)..'></label></span>'
         ..'\n <td class="date mdl-data-table__cell--non-numeric">'..FormatTimeAndDuration(w.startTime, w.durationSecond)
         ..'\n <td class="title mdl-data-table__cell--non-numeric mdl-cell--4-col-phone">'..ConvertTitle(w.title)
         ..'\n <td class="service mdl-data-table__cell--non-numeric"><span><img class="logo" src="'..PathToRoot()..'api/logo?onid='..w.onid..'&amp;sid='..w.sid..'"><span>'..w.stationName
         ..'\n <td class="comment mdl-data-table__cell--non-numeric">'..w.comment
-        ..'\n <td class="size">'..(size and ('%.1fGB'):format(size/1024/1024/1024) or '-')
+        ..'\n <td class="size">'..(size and ConvertSize(size,1) or '-')
         ..'\n <td class="priority"><span class="inline-icons mdl-cell--hide-desktop mdl-cell--hide-tablet"><i class="material-icons">priority_high</i></span>'..w.recSetting.priority
         ..'\n')
     end

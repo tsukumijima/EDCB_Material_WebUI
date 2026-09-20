@@ -1,6 +1,12 @@
 EDCB Material WebUI
 ===================
 
+> [!WARNING]
+> 開発終了しました  
+> 今後は [EMWUI 3](https://github.com/EMWUI/EDCB_Material_WebUI/tree/E3) をよろしくお願いします
+
+---
+
 ![Screenshot](https://github.com/tsukumijima/EDCB_Material_WebUI/assets/39271166/20737402-3a33-4c28-b8c6-43e23388fdad)
 
 ## 本家からの変更点
@@ -136,12 +142,14 @@ EDCB Material WebUI
 配信機能の設定などは`HttpPublic.ini`と`XCODE_OPTIONS.lua`を編集してください  
 
 #### テーマカラー
-[MDL](http://www.getmdl.io/customize/index.html)で選択したテーマカラーに変更することができます  
-選んだテーマカラーの`css`をダウンロードし`material.min.css`を置き換えるか、`HttpPublic.ini`の`cssキー`を編集することで変更できます  
-* 一部(border周り)が置き換えただけでは対応できない部分があります(`.mark`)  
-気になる方はcssを`user.css`に記述してください  
-* 色は[Material design](http://www.google.com/design/spec/style/color.html#color-color-palette)から選択することをお勧めします  
-`.mark`のborderはA700を指定しています
+~~[MDL](http://www.getmdl.io/customize/index.html)で~~選択したテーマカラーに変更することができます  
+選んだテーマカラーの`css`を`material.min.css`と同じフォルダに置き、設定ファイルでファイル名を指定してくださ
+
+MDLのサイトが**封鎖されたため**公式サイトから入手することができなくなりました  
+ですが、外部CDN [cdnjs](https://cdnjs.com/libraries/material-design-lite) などから入手可能なのなようです
+ 
+* 置き換えただけではごく一部対応しきれない部分があるので、気になる場合は設定ファイルの`theme`でプライマリーカラー、アクセントカラー、A700の色を指定してください
+* 色は[Material design](http://www.google.com/design/spec/style/color.html#color-color-palette)をなどで参照してください  
 
 
 # PWA
@@ -168,7 +176,6 @@ Legacy WebUIの配信機能を移植し、以下の事が可能となりまし�
 力技で対応しました
 * データ放送のNVRAM設定はLegacy WebUIと共通です、今のところ Legacy WebUI の[NVRAM設定](http://localhost:5510/legacy/nvram.html)でできます  
 初期値は`HttpPublic.ini`から指定できるようになりました
-* 実況ログ表示機能は動作未確認、動いてたらラッキー  
 * 倍速読み込みはトランスコードオプションの`filterFast`を有効にします
 
 
@@ -178,6 +185,8 @@ Legacy WebUIの配信機能を移植し、以下の事が可能となりまし�
 他にNetworkTVモードを使用している場合は注意してください  
 
 ## ファイル再生
+* **TvtPlayのチャプター機能を再現**
+* 対応形式や読み込み順など模してますが、一部挙動を変更しています
 * 開始時間を指定し、再度トランスコードすることでシークっぽい動作をしています
 * 録画結果ページでは録画結果(`GetRecFileInfo()`)からファイパスを取得し、ファイルの確認をし表示します
 * `ffprobe.exe`がToolsフォルダにある場合、メタ情報が取得可能となり、より正確な処理ができます
@@ -185,12 +194,11 @@ Legacy WebUIの配信機能を移植し、以下の事が可能となりまし�
 ## ライブラリ
 * 録画保存フォルダのビデオファイル(`ts`,`mp4`,`webm`等)を表示・再生します  
 `HttpPublic.ini`で任意のフォルダ指定が可能です  
-* Chrome系ブラウザでmp4を再生しようとするとエラーで再生できないことがありますが`-movflags faststart`オプションを付けエンコすることで再生できる場合が、
-また公開フォルダ外のファイルはスクリプトを経由するためシークできるブラウザとできないブラウザあるようです  
+* 公開フォルダ外のファイルはスクリプトを経由するためシークできるブラウザとできないブラウザあるようです  
 
 * サムネ  
-HttpPublicFolderのvideo\thumbsフォルダに`md5ハッシュ.jpg`があるとサムネを表示できます  
-ライブラリページのメニューから作成することができます
+HttpPublicFolderのvideo\thumbsフォルダの`md5ハッシュ.jpg`を、またはTS-Live!が有効な場合に表示できます  
+`md5ハッシュ.jpg`はフォルダにアクセスした際に自動的に、またはライブラリページのメニューからまとめて作成することができます
 
 
 # 補足

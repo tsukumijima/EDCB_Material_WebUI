@@ -25,6 +25,7 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 	#muted;
 	#volume;
 	#detelecine;
+	#deinterlace;
 	#src;
 	#networkState;
 	#mod;
@@ -36,7 +37,7 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 	#ctrl;
 	#ctok;
 	#params;
-	constructor(notCustom, video, autoCinema, ctok, aribb24){
+	constructor(video){
 		super(video);
 		this.#playbackRate = 1;
 		this.#paused = true;
@@ -45,18 +46,19 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 		this.#sameStatsCount = 0;
 		this.#currentReader = null;
 		this.#params = new URLSearchParams();
-		if (notCustom){
-			this.#e = video;
-			if (aribb24) this.#initCap(aribb24.useSvg, aribb24.option, aribb24.container);
-		}else{
-			this.#e = this;
-		}
-		this.#ctok = ctok || this.#e.getAttribute('ctok');
-		this.#muted = this.#e.hasAttribute('muted') ? true : false;
-		this.#detelecine = autoCinema || this.#e.hasAttribute('autoCinema') ? 2 : 0;
+		this.#e = video || this;
+		this.#initCap();
+		this.#ctok = this.#e.getAttribute('ctok');
+		this.#muted = this.#e.hasAttribute('muted');
+		this.#detelecine = this.#e.hasAttribute('autoCinema') ? 2 : 0;
+		this.#deinterlace = this.#e.getAttribute('deinterlace');
 		this.#initialize();
 		if (this.#isUnsupported()) return;
 		this.#createWasmModule();
+
+		document.addEventListener("visibilitychange", () => {
+			if (this.#wakeLock && document.visibilityState === 'visible') this.#requestWakeLock();
+		});
 	}
 
 
@@ -109,6 +111,7 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 				this.#mod = mod;
 				mod.setAudioGain(this.#muted?0:this.#volume);
 				mod.setDetelecineMode(this.#detelecine);
+				mod.setDeinterlace&&this.#deinterlace&&mod.setDeinterlace(this.#deinterlace);
 				mod.pause();
 				mod.setCaptionCallback((pts,ts,data) => this.#cap&&this.#cap.pushRawData(this.#statsTime+ts,data.slice()));
 				mod.setStatsCallback(stats => {
@@ -141,20 +144,31 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 		});
 	}
 
+	async #requestWakeLock() {
+		this.#wakeLock = await navigator.wakeLock.request('screen');
+	}
+
 	#initialize(){
 		this.#src = '';
 		this.#error = null;
 		this.#networkState = this.#networkStateCode.EMPTY;
 		this.#currentTime = 0;
 		this.#done = false;
+		if (!this.#wakeLock) return;
+		this.#wakeLock.release();
 		this.#wakeLock = null;
 	}
 
 	#cap;
 	#container = document.getElementById("vid-cont");
-	#initCap(useSvg = false, option = {}, container){
-		this.#cap = useSvg ? new aribb24js.SVGRenderer(option) : new aribb24js.CanvasRenderer(option);
-		if (container) this.#container = container;
+	#initCap(useSvg = this.#e.dataset.aribb24UseSvg, option = JSON.parse(decodeURIComponent(this.#e.dataset.aribb24OptionJson||'{}')), container){
+		try{
+			this.#cap = useSvg ? new aribb24js.SVGRenderer(option) : new aribb24js.CanvasRenderer(option);
+			if (container) this.#container = container;
+		}catch(e){
+			this.#cap = null;
+			console.warn("aribb24js:",e);
+		}
 	}
 
 	#loadSource(src){
@@ -183,8 +197,6 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 		this.#e.src = '';
 		this.#e.removeAttribute('src');
 		this.#e.initSrc = null;
-		this.#e.offset = null;
-		this.#e.ofssec = null;
 		this.#cap&&this.#cap.detachMedia();
 	}
 	#reset(){
@@ -260,13 +272,13 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 		this.#setCurrentTime(Math.floor(this.#currentTime));
 	}
 	#setCurrentTime(ofssec){
-		if (!Number(ofssec)) return;
+		if (ofssec==null || isNaN(ofssec)) return;
 		this.#currentTime = Math.floor(ofssec);
 		this.#src.searchParams.set('ofssec', ofssec);
 		this.#resetRead();
 	}
 	#setOffset(offset){
-		if (!Number(offset)) return;
+		if (offset==null || isNaN(offset)) return;
 		this.#src.searchParams.set('offset', offset);
 		this.#resetRead();
 	}
@@ -346,7 +358,7 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 			this.#currentReader = response.body.getReader();
 			this.#readNext(this.#currentReader,null);
 			//Prevent screen sleep
-			if (!this.#wakeLock) navigator.wakeLock.request("screen").then(lock => this.#wakeLock = lock);
+			if (!this.#wakeLock) this.#requestWakeLock();
 		});
 		['ofssec','offset'].forEach(e => this.#src.searchParams.delete(e));
 	}
@@ -359,8 +371,8 @@ const tsliveMixin = (Base = class {}) => class extends Base{
 }
 
 class TsLive extends tsliveMixin(){
-	constructor(video, autoCinema, ctok, aribb24){
-		super(true, video, autoCinema, ctok, aribb24);
+	constructor(video){
+		super(video);
 	}
 }
 
@@ -372,22 +384,24 @@ const hlsMixin = (Base = class {}) => class extends Base{
 	#alwaysUseHls;
 	#params;
 	#fast;
-	constructor(notCustom, video, alwaysUseHls, hls4, ctok, aribb24){
+	constructor(video){
 		super(video);
 		this.#fast = 1;
 		this.#params = new URLSearchParams();
-		if (notCustom){
-			this.#e = video;
+		this.#e = video || this;
+		if (video){
 			this.#e.params = this.params;
 			this.#e.fast = this.fast;
-			if (aribb24) this.#initCap(aribb24.useSvg, aribb24.option, aribb24.vidMeta);
-		}else{
-			this.#e = this;
 		}
-		this.#ctok = ctok || this.#e.getAttribute('ctok');
-		this.#hlsMp4Query = hls4 || this.#e.hasAttribute('hls4') ? `&hls4=${hls4||this.#e.getAttribute('hls4')}` : '';
-		this.#alwaysUseHls = alwaysUseHls || this.#e.hasAttribute('alwaysUseHls') ? true : false;
+		this.#initCap();
+		this.#ctok = this.#e.getAttribute('ctok');
+		this.#hlsMp4Query = this.#e.hasAttribute('hls4') ? `&hls4=${this.#e.getAttribute('hls4')}` : '';
+		this.#alwaysUseHls = this.#e.hasAttribute('alwaysUseHls');
 		this.#initHls();
+		this.#e.addEventListener('loadedmetadata', () => {
+			// 映像の幅と高さが0なら音声のみとみなす
+			if (this.#e.videoWidth === 0 && this.#e.videoHeight === 0) this.#poster('SOUND ONLY');
+		});
 	}
 
 
@@ -411,6 +425,7 @@ const hlsMixin = (Base = class {}) => class extends Base{
 	get setAudioTrack(){return this.#setAudioTrack}
 	get setDetelecine(){return this.#setDetelecine}
 
+	get fixedCurrentTime(){return this.#currentTime()}
 	set audioTrack(n){this.#setAudioTrack(n)}
 	set detelecine(b){this.#setDetelecine(b)}
 
@@ -455,10 +470,15 @@ const hlsMixin = (Base = class {}) => class extends Base{
 
 	#cap;
 	#cue;
-	#initCap(useSvg = false, option = {}, vidMeta = document.getElementById('vid-meta')){
-		option.enableAutoInBandMetadataTextTrackDetection = !this.#alwaysUseHls || !Hls.isSupported();
-		this.#cap = useSvg ? new aribb24js.SVGRenderer(option) : new aribb24js.CanvasRenderer(option);
-		if (vidMeta) vidMeta.oncuechange = e => this.#cuechangeB24Caption(e);
+	#initCap(useSvg = this.#e.dataset.aribb24UseSvg, option = JSON.parse(decodeURIComponent(this.#e.dataset.aribb24OptionJson)||'{}'), vidMeta = document.getElementById('vid-meta')){
+		try{
+			option.enableAutoInBandMetadataTextTrackDetection = !this.#alwaysUseHls || !Hls.isSupported();
+			this.#cap = useSvg ? new aribb24js.SVGRenderer(option) : new aribb24js.CanvasRenderer(option);
+			if (vidMeta) vidMeta.oncuechange = e => this.#cuechangeB24Caption(e);
+		}catch(e){
+			this.#cap = null;
+			console.warn("aribb24js:",e);
+		}
 	}
 	#cuechangeB24Caption(e){
 		if (this.#cue) return;
@@ -467,18 +487,20 @@ const hlsMixin = (Base = class {}) => class extends Base{
 		Datacast.oncuechangeB24Caption(this.#cap, e.target.track.cues);
 	}
 
+	#ofssec = 0;
+	#offset = 0;
 	#reset(){
 		this.#src = '';
 		this.#hls&&this.#hls.loadSource('');
 		this.#cap&&this.#cap.detachMedia();
-		['ofssec','offset'].forEach(e => {
-			this.#e[e] = null;
-			this.#params.delete(e);
-		});
+		this.#ofssec = 0;
+		this.#offset = 0;
+		['ofssec','offset'].forEach(e => this.#params.delete(e));
 	}
 	#clear(){
 		this.#reset();
 		this.#e.src = '';
+		this.#e.poster = '';
 		this.#e.initSrc = null;
 		this.#e.defaultPlaybackRate = this.#fast;
 		this.#error = null;
@@ -497,7 +519,7 @@ const hlsMixin = (Base = class {}) => class extends Base{
 		this.#params.set('load', this.#createRandom());
 		this.#onload();
 	}
-	#reload(onload = ()=>{}, seek = this.#e.currentTime * this.#fast + (this.#e.ofssec || 0)){
+	#reload(onload = ()=>{}, seek = this.#currentTime()){
 		if (!this.#e.initSrc) return;
 		onload();
 
@@ -506,20 +528,23 @@ const hlsMixin = (Base = class {}) => class extends Base{
 			this.#params.delete('load');
 		}
 
-		this.#e.doNotAutoplay = this.#e.paused;
 		this.#reset();
 		if (seek){
-			const key = seek<1 ? 'offset' : 'ofssec';
-			this.#e[key] = Math.floor(seek*(seek<1?100:1));
-			this.#params.set(key, this.#e[key]);
+			if (seek < 1){
+				this.#offset = Math.floor(seek*100);
+				this.#params.set('offset', this.#offset);
+			}else{
+				this.#ofssec = Math.floor(seek);
+				this.#params.set('ofssec', this.#ofssec);
+			}
 		}
 
 		this.#onload();
 	}
 
 	#setSeek(val, onload){
-		if (1 < val && this.#e.ofssec < val && val < this.#e.ofssec + this.#e.duration){
-			this.#e.currentTime = val - this.#e.ofssec;
+		if (1 < val && this.#ofssec < val && val < this.#ofssec + this.#e.duration){
+			this.#e.currentTime = val - this.#ofssec;
 			return;
 		}
 		this.#reload(onload, val);
@@ -555,7 +580,28 @@ const hlsMixin = (Base = class {}) => class extends Base{
 		if (/video\/mp2t/.test(s)) return 'maybe';
 		else return super.canPlayType ? super.canPlayType(s) : this.#e.canPlayType(s);
 	}
-
+	#currentTime(){
+		return this.#e.currentTime * (this.#e.initSrc?this.#fast:1) + this.#ofssec;
+	}
+	#poster(text = 'Loading...', width = 1280, height = 720){
+		try{
+			const canvas=document.createElement("canvas");
+			canvas.width=width;
+			canvas.height=height;
+			const ctx=canvas.getContext("2d");
+			ctx.fillStyle="#121212";
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+			ctx.shadowColor = '#ff0000';
+			ctx.shadowBlur = 10;
+			ctx.fillStyle="#ff1a1a";
+			ctx.textAlign="center";
+			ctx.font=canvas.height/10+"px sans-serif";
+			ctx.fillText(text,canvas.width/2,canvas.height/2);
+			this.#e.poster=canvas.toDataURL();
+		}catch(e){
+			console.warn("poster:",e);
+		}
+	}
 	#apk(src, onerror, onstart){
 		src = new URL(src, location.href);
 		src.searchParams.set('ctok', this.#ctok);
@@ -596,8 +642,8 @@ const hlsMixin = (Base = class {}) => class extends Base{
 }
 
 class HlsLoader extends hlsMixin(){
-	constructor(video, alwaysUseHls, hls4, ctok, aribb24){
-		super(true, video, alwaysUseHls, hls4, ctok, aribb24);
+	constructor(video){
+		super(video);
 	}
 }
 
@@ -624,6 +670,7 @@ class TsThumb{
 	}
 
 	get setThumb(){return this.#setThumb}
+	get testThumbs(){return this.#testThumbs}
 
 	get hide(){return this.#hide}
 
@@ -638,6 +685,25 @@ class TsThumb{
 		if (!frame) return;
 		this.#putImage(frame, canvas);
 		return true;
+	}
+
+	async #testThumbs(pathList){
+		//trueを返した項目はサムネを取得できる"かもしれない"。効率のため2項目以下は特別扱い
+		const tests = pathList.length == 2 ? [true, true] : pathList.length == 1 ? [true] : [];
+		if (pathList.length > 2){
+			const url = new URL(this.#api, location.href);
+			for (let i = 0; i < pathList.length; i++){
+				url.searchParams.append('test', `${this.#key}-${pathList[i]}`);
+				//APIの制限により100個まで
+				if (i == pathList.length - 1 || url.searchParams.size >= 100 || url.searchParams.toString().length >= 1000){
+					const r = await fetch(url).catch(() => null);
+					if (r && r.ok) tests.push(...JSON.parse(await r.text().catch(() => '[]')));
+					if (tests.length != i + 1) return null; //失敗
+					url.searchParams.delete('test');
+				}
+			}
+		}
+		return tests;
 	}
 
 	async #seek(value, offset){
@@ -724,6 +790,12 @@ const datacastMixin = (Base = class {}) => class extends Base{
 		commInput: document.getElementById("comm"),
 		commBtn: document.getElementById("commSend"),
 		bcomm: document.getElementById("comment-control"),
+		shiftJikkyo: document.querySelectorAll(".jikkyo-shift"),
+		selectID: document.querySelector('#jikkyo-config select[name="id"]'),
+		inputTM: document.querySelector('#jikkyo-config input[name="tm"]'),
+		inputTMSec: document.querySelector('#jikkyo-config select[name="tmsec"]'),
+		btnConfig: document.querySelector("#jikkyo-TM button"),
+		kakolog: document.getElementById("kakolog"),
 		webBmlContainer: document.querySelector(".data-broadcasting-browser-container"),
 		remocon: document.querySelector(".remote-control"),
 		indicator: document.querySelector(".remote-control-indicator"),
@@ -732,15 +804,19 @@ const datacastMixin = (Base = class {}) => class extends Base{
 	#webBmlSrc;
 	#noWebBml;
 	#noDanmaku;
-	constructor(video, webBml, danmaku, ctok, replaceTag, api){
+	constructor(video){
 		super();
-		this.#e = video||this;
+		this.#e = video || this;
 		this.#fast = 1;
 		this.#params = new URLSearchParams();
-		this.#webBmlSrc = webBml;
 		this.#noWebBml = typeof bmlBrowserSetVisibleSize === 'undefined';
+		if (!this.#noWebBml) this.#webBmlSrc = document.getElementById('webBml').getAttribute('src');
+		Datacast.setNvramDef(this.#e.dataset.absentZip, this.#e.dataset.absentPrefecture, this.#e.dataset.absentRegion);
 		this.#noDanmaku = typeof Danmaku === 'undefined';
-		if (danmaku) this.#initDanmaku(danmaku, ctok, replaceTag, api);
+		if (this.#noDanmaku) return;
+		this.#initDanmaku();
+		this.#ctok = this.#e.dataset.commentCtok;
+		Object.assign(this.#api, JSON.parse(decodeURIComponent(this.#e.dataset.commentApi||'{}')));
 	}
 
 
@@ -752,9 +828,10 @@ const datacastMixin = (Base = class {}) => class extends Base{
 	get loadSubData(){return this.#loadSubData}
 	get setFast(){return this.#setFast}
 
-	get createDanmaku(){return this.#initDanmaku}
-	get setWebBml(){return this.#setWebBml};
+	set setRemoconEvent(fn){this.#setRemoconEvent(fn)}
 	get shiftJikkyo(){return this.#shiftJikkyo}
+	set jkID(id){this.#setJK(id)}
+	set jkTM(tm){this.#setJK(null,tm)}
 
 	get setElemsList(){return this.#setElems}
 
@@ -764,59 +841,66 @@ const datacastMixin = (Base = class {}) => class extends Base{
 		if (/^[0-9]{7}$/.test(zip)) localStorage.setItem(`${this.prefix}zipcode`,btoa(zip));
 		else localStorage.removeItem(`${this.prefix}zipcode`);
 	}
-	static setNvramPrefecture(prefecture, regioncode){
+	static setNvramPrefecture(prefecture){
 		if (!prefecture) return;
-		if (prefecture&&prefecture!=="255-0x0"){
-			localStorage.setItem(`${this.prefix}prefecture`,btoa(String.fromCharCode(parseInt(prefecture))));
-			regioncode??=parseInt(regioncode.split("-0x")[1],16);
-			localStorage.setItem(`${this.prefix}regioncode`,btoa(String.fromCharCode(regioncode>>8,regioncode&0xff)));
-		}else{
-			localStorage.removeItem(`${this.prefix}prefecture`);
-			localStorage.removeItem(`${this.prefix}regioncode`);
-		}
-
+		if (prefecture!=="0") localStorage.setItem(`${this.prefix}prefecture`,btoa(String.fromCharCode(prefecture)));
+		else localStorage.removeItem(`${this.prefix}prefecture`);
+	}
+	static setNvramRegioncode(regioncode){
+		if (!regioncode) return;
+		if (regioncode!=="0") localStorage.setItem(`${this.prefix}regioncode`,btoa(String.fromCharCode(regioncode>>8,regioncode&0xff)));
+		else localStorage.removeItem(`${this.prefix}regioncode`);
 	}
 	static setNvramDef(zip, prefecture, regioncode){
 		if(!localStorage.getItem(`${this.prefix}zipcode`)) this.setNvramZip(zip);
-		if(!localStorage.getItem(`${this.prefix}prefecture`)) this.setNvramPrefecture(prefecture, regioncode);
+		if(!localStorage.getItem(`${this.prefix}prefecture`)) this.setNvramPrefecture(prefecture);
+		if(!localStorage.getItem(`${this.prefix}regioncode`)) this.setNvramRegioncode(regioncode);
 	}
 
 
 
 	#ctok;
-	#replaceTag;
+	#customReplace;
 	#danmaku;
-	#danmakuOption = {
-		container:this.#elems.vcont,
-		opacity:1,
-		callback:function(){},
-		error:function(msg){},
-		apiBackend:{read:function(opt){opt.success([]);}},
-		height:32,
-		duration:5,
-		paddingTop:10,
-		paddingBottom:10,
-		unlimited:false,
-		api:{id:"noid",address:"noad",token:"noto",user:"nous",speedRate:1}
-	};
 	#api = {
 		jklog: 'jklog',
 		comment: 'comment',
 	}
-	#initDanmaku(danmaku = {}, ctok, replaceTag, api = {}){
-		if (this.#noDanmaku) return;
-		Object.assign(this.#danmakuOption, danmaku);
-		Object.assign(this.#api, api);
-		this.#ctok = ctok;
-		this.#replaceTag = replaceTag;
-		this.#danmaku = new Danmaku(this.#danmakuOption);
-		if (this.#elems.commInput) this.#addSendComment();
+	#initDanmaku(){
+		try{
+			this.#customReplace = JSON.parse(decodeURIComponent(this.#e.dataset.customReplaceJson||'[]'));
+			for(const rep of this.#customReplace){
+				rep.regex = new RegExp(rep.pattern,rep.flags);
+			}
+		}catch(e){
+			console.warn("customReplaceJson:",e);
+			this.#customReplace = [];
+		}
+		this.#danmaku = new Danmaku({
+			container:document.getElementById("danmaku-container")||this.#elems.vcont,
+			opacity:1,
+			callback:function(){},
+			error:function(msg){},
+			apiBackend:{read:function(opt){opt.success([]);}},
+			height:+this.#e.dataset.commentHeight||32,
+			duration:+this.#e.dataset.commentDuration||5,
+			paddingTop:10,
+			paddingBottom:10,
+			unlimited:false,
+			api:{id:"noid",address:"noad",token:"noto",user:"nous",speedRate:1}
+		});
+		this.#addJikkyoEvent();
+	}
+	#replaceTag = tag => {
+		for(const rep of this.#customReplace){
+			tag = tag.replace(rep.regex,rep.replace);
+		}
+		return tag;
 	}
 	#initRemocon = () => {}
-	#setWebBml(src, initRemocon){
-		this.#webBmlSrc = src;
-		this.#initRemocon = initRemocon;
-		this.#initWebBml();
+	#setRemoconEvent(fn){
+		this.#initRemocon = fn;
+		fn(this.#elems.remocon);
 	}
 	async #initWebBml(){
 		return new Promise((resolve, reject) => {
@@ -896,7 +980,7 @@ const datacastMixin = (Base = class {}) => class extends Base{
 	#enableJikkyo(){
 		this.#jikkyoState = this.#STATE.ENABLED;
 		if (this.#noDanmaku) return;
-		if (this.#e.initSrc) this.#jkStream.enable(true);
+		if (this.#e.initSrc&&!this.#shiftable) this.#jkStream.enable(true);
 		else this.#jklog.enable();
 	}
 	#disableJikkyo(){
@@ -928,11 +1012,12 @@ const datacastMixin = (Base = class {}) => class extends Base{
 		return this.jikkyo.showing;
 	}
 	#loadSubData(){
+		this.#shiftable=this.#e.initSrc&&this.#e.initSrc.searchParams.has('shiftable');
 		if (!this.#noWebBml && this.#datacastState!=this.#STATE.DISABLED)
 			if (this.#e.initSrc) this.#dataStream.enable();
 			else this.#psc.enable();
 		if (!this.#noDanmaku && this.#jikkyoState!=this.#STATE.DISABLED)
-			if (this.#e.initSrc) this.#jkStream.enable();
+			if (this.#e.initSrc&&!this.#shiftable) this.#jkStream.enable();
 			else this.#jklog.enable();
 		if (this.#e.initSrc) this.#openSubStream();
 	}
@@ -945,14 +1030,20 @@ const datacastMixin = (Base = class {}) => class extends Base{
 
 	#fname(){
 		const src = this.#e.initSrc||new URL(this.#e.getAttribute('src'), location.href);
-		if (src.searchParams.has('fname')) return src.searchParams.get('fname');
-		else return this.#e.getAttribute('src')||'';
+		return src.searchParams.has('recid') ? `recid=${src.searchParams.get('recid')}`
+			: src.searchParams.has('rid') ? `rid=${src.searchParams.get('rid')}`
+			: `fname=${src.searchParams.has('fname') ? encodeURIComponent(src.searchParams.get('fname')) : src.pathname.replace(/^(?:\/)+/,"")}`;
 	}
 	#setElems(elems){
 		Object.assign(this.#elems, elems);
-		this.#addSendComment();
+		this.#addJikkyoEvent();
 	}
-	#addSendComment(){
+	#addJikkyoEvent(){
+		this.#elems.shiftJikkyo.forEach(e=>e.onclick=()=>this.#shiftJikkyo(+e.dataset.sec));
+		if (this.#elems.selectID) this.#elems.selectID.onchange=()=>this.#setJK(this.#elems.selectID.value);
+		if (this.#elems.btnConfig) this.#elems.btnConfig.onclick=()=>this.#setJK(null,this.#elems.inputTM.value?Math.floor(Date.parse(this.#elems.inputTM.value+"Z")/60000)*60+this.#elems.inputTMSec.selectedIndex-32400:0);
+		if (this.#elems.kakolog) this.#elems.kakolog.onclick=()=>this.#jklog.kakolog();
+		if (!this.#elems.commInput) return;
 		this.#elems.commInput.onkeydown = e => {if(!e.isComposing&&e.keyCode!=229&&e.key=="Enter") this.#sendComment();}
 		this.#elems.commBtn.onclick = () => this.#sendComment();
 	}
@@ -1085,7 +1176,21 @@ const datacastMixin = (Base = class {}) => class extends Base{
 			if(i==readCount){
 				i=response.indexOf("\n",readCount);
 				if(i<0)break;
-				this.#jkStream.stream(response.substring(readCount,i));
+				const s=response.substring(readCount,i);
+				if(!this.#mHeader&&!!(this.#mHeader=s.match(/^<!-- J=([0-9]+)(?:;T=([0-9]+))?/))){
+					for(const opt of this.#elems.selectID.options){
+						if(opt.value==this.#mHeader[1]){
+							opt.selected=true;
+							break;
+						}
+					}
+					if(this.#mHeader[2]){
+						const tm=this.#mHeader[2]-Math.floor(this.#e.fixedCurrentTime||this.#e.currentTime);
+						if(this.#elems.inputTM)this.#elems.inputTM.value==new Date(1000*tm+32400000).toISOString().substring(0,16);
+						if(this.#elems.inputTMSec)this.#elems.inputTMSec.options[tm%60].selected=true;
+					}
+				}
+				this.#jkStream.stream(s);
 				readCount=i+1;
 			}else{
 				i=i<0?response.length:i;
@@ -1277,6 +1382,74 @@ const datacastMixin = (Base = class {}) => class extends Base{
 		}
 	}
 
+	#getJikkyoLogStats(text){
+		let sec=0;
+		for(let pos=0;;){
+			const i=text.indexOf("\n",pos);
+			if(i<0)break;
+			if(text.startsWith("<!-- J=",pos))++sec;
+			pos=i+1;
+		}
+		const windowSec=Math.max(Math.floor(sec/400),5);
+		sec=0;
+		let counts=[0],maxCount=0;
+		for(let pos=0;;){
+			const i=text.indexOf("\n",pos);
+			if(i<0)break;
+			if(text.startsWith("<!-- J=",pos)){
+			if(++sec%windowSec==0){
+				maxCount=Math.max(counts[counts.length-1],maxCount);
+				counts.push(0);
+			}
+			}else if(text.startsWith("<chat ",pos)){
+			counts[counts.length-1]++;
+			}
+			pos=i+1;
+		}
+		return {sec,windowSec,counts,maxCount};
+	}
+
+	#drawStatsGraph(stats,now,ofs){
+		if(!stats||!(stats.maxCount>0))return;
+		const w=stats.counts.length;
+		const h=50;
+		now/=stats.sec;
+		now=Math.floor((now>0?Math.min(now,1):0)*w);
+		ofs/=stats.sec;
+		ofs=Math.floor((ofs>0?Math.min(ofs,1):ofs<0?Math.max(ofs,-1):0)*w);
+		if(!stats.canvas){
+			stats.canvas=document.createElement("canvas");
+			stats.canvas.width=w;
+			stats.canvas.height=h;
+		}else if(stats.now==now&&stats.ofs==ofs){
+			//No redraw required
+			return;
+		}
+		stats.now=now;
+		stats.ofs=ofs;
+		const ctx=stats.canvas.getContext("2d");
+		ctx.clearRect(0,0,w,h);
+		ctx.fillStyle="#888";
+		if(ofs>0)ctx.fillRect(0,0,ofs,h);
+		else if(ofs<0)ctx.fillRect(w+ofs,0,w,h);
+		ctx.strokeStyle="#07d";
+		ctx.lineWidth=1;
+		for(let x=0;x<w;x++){
+			ctx.beginPath();
+			ctx.moveTo(x+0.5,h);
+			ctx.lineTo(x+0.5,h-Math.floor(stats.counts[x]/stats.maxCount*h));
+			ctx.closePath();
+			ctx.stroke();
+		}
+		ctx.strokeStyle="#f00";
+		ctx.lineWidth=2;
+		ctx.beginPath();
+		ctx.moveTo(now,0);
+		ctx.lineTo(now,h);
+		ctx.closePath();
+		ctx.stroke();
+	}
+
 	#commHide;
 	#checkScrollID;
 	#fragment;
@@ -1286,10 +1459,15 @@ const datacastMixin = (Base = class {}) => class extends Base{
 	#jkID="?";
 	#jkStream = {
 		clear: () => {
+			this.#params.delete('jkID');
+			this.#params.delete('jkTM');
+			if(this.#stats&&this.#stats.canvas){
+				this.#elems.comm.removeChild(this.#stats.canvas);
+				this.#stats=null;
+			}
 			clearInterval(this.#checkScrollID);
 			this.#checkScrollID=0;
-			if (!this.#elems.bcomm) return;
-			this.#elems.bcomm.style.display="none";
+			if (this.#elems.bcomm) this.#elems.bcomm.style.display="none";
 			while (this.#elems.chats.firstChild) this.#elems.chats.removeChild(this.#elems.chats.firstChild);
 		},
 		disable: () => {
@@ -1405,6 +1583,17 @@ const datacastMixin = (Base = class {}) => class extends Base{
 		this.#jklog.offsetSec+=sec;
 		this.#addMessage("Offset "+this.#jklog.offsetSec+"sec");
 	}
+	#setJK(id, tm){
+		if (this.#jklog.xhr&&this.#jklog.xhr.readyState!=4) return;
+		if (id) this.#params.set('jkID', id);
+		if (tm) this.#params.set('jkTM', tm);
+		if (this.#e.initSrc&&!this.#shiftable) this.#openSubStream();
+		else{
+			this.#logText=null;
+			this.#jklog.xhr=null;
+			this.#jklog.enable();
+		}
+	}
 	#chatsScroller(){
 		clearInterval(this.#checkScrollID);
 		this.#commHide=true;
@@ -1485,7 +1674,7 @@ const datacastMixin = (Base = class {}) => class extends Base{
 			this.#psc.videoLastSec=0;
 		},
 		enable: async () => {
-			if(!this.#e.getAttribute("src")||this.#e.getAttribute("src").startsWith('blob:'))return;
+			if(!this.#e.getAttribute("src")||this.#e.getAttribute("src").startsWith("blob")&&!this.#e.initSrc)return;
 			if(this.#loaded&&this.#loaded!=this.#e.getAttribute("src"))await this.#initWebBml();
 			this.#datacastState=this.#STATE.LOG;
 			this.#psc.startRead();
@@ -1508,15 +1697,18 @@ const datacastMixin = (Base = class {}) => class extends Base{
 	}
 
 	#logText;
+	#mHeader;
+	#stats;
+	#shiftable;
 	#jklog = {
 		offsetSec: 0,
 		startRead: () => {
 			clearTimeout(this.#jklog.readTimer);
-			const startSec=this.#e.currentTime+this.#jklog.offsetSec;
+			const startSec=(this.#e.fixedCurrentTime||this.#e.currentTime)+this.#jklog.offsetSec;
 			this.#jklog.videoLastSec=startSec;
 			const ctx={};
 			const read=()=>{
-				const videoSec=this.#e.currentTime+this.#jklog.offsetSec;
+				const videoSec=(this.#e.fixedCurrentTime||this.#e.currentTime)+this.#jklog.offsetSec;
 				if(videoSec<this.#jklog.videoLastSec||this.#jklog.videoLastSec+10<videoSec){
 					this.#jklog.startRead();
 					return;
@@ -1524,9 +1716,10 @@ const datacastMixin = (Base = class {}) => class extends Base{
 				this.#jklog.videoLastSec=videoSec;
 				if(this.#logText){
 					this.#readJikkyoLog(this.#logText,(sec,tag)=>{
-						this.#jklog.stream(tag);
+						this.#jkStream.stream(tag);
 						return sec<videoSec;
 					},startSec,ctx);
+					this.#drawStatsGraph(this.#stats,videoSec,this.#jklog.offsetSec);
 				}
 				this.#jklog.readTimer=setTimeout(()=>read(),200);
 			}
@@ -1548,13 +1741,14 @@ const datacastMixin = (Base = class {}) => class extends Base{
 			this.#jkID="?";
 		},
 		enable: () => {
-			if(!this.#e.getAttribute("src")||this.#e.getAttribute("src").startsWith('blob:'))return;
+			if(!this.#e.getAttribute("src")||this.#e.getAttribute("src").startsWith("blob")&&!this.#e.initSrc)return;
 			this.#jikkyoState=this.#STATE.LOG;
 			this.#chatsScroller();
 			this.#jklog.startRead();
 			if(this.#jklog.xhr)return;
+			this.#mHeader=null;
 			this.#jklog.xhr=new XMLHttpRequest();
-			this.#jklog.xhr.open("GET",`${this.#api.jklog}?fname=${this.#fname().replace(/^(?:\.\.\/)+/,"")}`);
+			this.#jklog.xhr.open("GET",`${this.#api.jklog}?${this.#fname()}&jkID=${this.#params.get('jkID')||0}&jkTM=${this.#params.get('jkTM')||0}`);
 			this.#jklog.xhr.onloadend=()=>{
 				if(!this.#logText){
 					this.#jkStream.error(this.#jklog.xhr.status,0);
@@ -1563,8 +1757,45 @@ const datacastMixin = (Base = class {}) => class extends Base{
 			this.#jklog.xhr.onload=()=>{
 				if(this.#jklog.xhr.status!=200||!this.#jklog.xhr.response)return;
 				this.#logText=this.#jklog.xhr.response;
+				const m=this.#logText.match(/^<!-- J=([0-9]+);T=([0-9]+)/);
+				if(m){
+				for(const opt of this.#elems.selectID.options){
+					if(opt.value==m[1]){
+						opt.selected=true;
+						break;
+					}
+				}
+				if(this.#elems.inputTM)this.#elems.inputTM.value=new Date(1000*m[2]+32400000).toISOString().substring(0,16);
+				if(this.#elems.inputTMSec)this.#elems.inputTMSec.options[m[2]%60].selected=true;
+				}
+				if(this.#stats&&this.#stats.canvas){
+					this.#elems.comm.removeChild(this.#stats.canvas);
+				}
+				this.#stats=this.#getJikkyoLogStats(this.#logText);
+				this.#drawStatsGraph(this.#stats);
+				if(this.#stats.canvas){
+					this.#elems.comm.insertBefore(this.#stats.canvas,this.#elems.comm.firstChild);
+				}
 			};
 			this.#jklog.xhr.send();
+		},
+		kakolog: () => {
+			if(!this.#e.getAttribute("src")&&!this.#e.initSrc)return;
+			const text=this.#elems.kakolog.innerText;
+			this.#elems.kakolog.innerText="取得中...";
+			this.#elems.kakolog.disabled=true;
+			const xhr=new XMLHttpRequest();
+			xhr.open("GET",`${this.#api.jklog}?${this.#fname()}&jkID=${this.#params.get('jkID')||0}&jkTM=${this.#params.get('jkTM')||0}&kakolog=1`);
+			xhr.onloadend=()=>{
+				if(xhr.status==200||xhr.response){
+					this.#logText=null;
+					this.#jklog.xhr=null;
+					this.#jklog.enable();
+				}
+				this.#elems.kakolog.innerText=text;
+				this.#elems.kakolog.disabled=false;
+			}
+			xhr.send();
 		}
 	}
 
@@ -1618,8 +1849,9 @@ const datacastMixin = (Base = class {}) => class extends Base{
 		if(!this.#e.initSrc||!this.#params.has('psidata')&&!this.#params.has('jikkyo'))return;
 		let readCount=0;
 		const ctx={};
+		this.#mHeader=null;
 		this.#xhr=new XMLHttpRequest();
-		this.#xhr.open("GET",`${this.#e.initSrc}&${this.#params.toString()}&ofssec=${(this.#e.ofssec || 0)+Math.floor(this.#e.currentTime * (this.#fast || 1))}`);
+		this.#xhr.open("GET",`${this.#e.initSrc}&${this.#params.toString()}&ofssec=${Math.floor(this.#e.fixedCurrentTime||this.#e.currentTime)}`);
 		this.#xhr.onloadend=()=>{
 			if(this.#xhr&&(readCount==0||this.#xhr.status!=0)){
 				if(this.#params.has('psidata'))this.#dataStream.error(this.#xhr.status,readCount);
@@ -1665,20 +1897,20 @@ const datacastMixin = (Base = class {}) => class extends Base{
 }
 
 class Datacast extends datacastMixin(){
-	constructor(video, webBml, danmaku, ctok, replaceTag, api){
-		super(video, webBml, danmaku, ctok, replaceTag, api);
+	constructor(video){
+		super(video);
 	}
 }
 
 class TsLiveDatacast extends tsliveMixin(datacastMixin()){
-	constructor(video, autoCinema, ctok, aribb24){
-		super(true, video, autoCinema, ctok, aribb24);
+	constructor(video){
+		super(video);
 	}
 }
 
 class HlsDatacast extends hlsMixin(datacastMixin()){
-	constructor(video, alwaysUseHls, hls4, ctok, aribb24){
-		super(true, video, alwaysUseHls, hls4, ctok, aribb24);
+	constructor(video){
+		super(video);
 	}
 }
 
@@ -1693,3 +1925,229 @@ customElements.define('ts-hls', class extends hlsMixin(datacastMixin(HTMLVideoEl
 		super();
 	}
 }, {extends: 'video'});
+
+
+/*
+TvtPlayのチャプターによるループやスキップ機能
+
+本家と以下の違いに注意
+＊スキップ区間(ix-ox)ではループしない
+＊次のチャプターを検索する際、スキップ開始(ix)を無視する
+（OP-CM-Aのような構成でCMを無視）
+*/
+class chapterTvt{
+	#vid;
+	#disabled = false;
+	#repeat = true;
+	#skip = true;
+	#ignoreXIN = true;
+	#hasSeeked;
+	#lastTime = 0;
+	#container = document.getElementById('chapMaker-container');
+	#currentTime(){return this.#vid.fixedCurrentTime || this.#vid.currentTime}
+	constructor(video){
+		this.#vid = video;
+		document.getElementById('nextChap').addEventListener('click', () => this.#navigate());
+		document.getElementById('prevChap').addEventListener('click', () => this.#navigate(false));
+		video.addEventListener('timeupdate', () => {
+			if (this.#disabled || !this.#chapters) return;
+
+			const currentTime = this.#currentTime();
+
+			// 判定内に手動シークした場合に移動されるのを防ぐ
+			if (this.#hasSeeked){
+				if (this.#hasSeeked.isLoop ? currentTime < this.#hasSeeked.end || currentTime >= this.#hasSeeked.end + 1 : currentTime >= this.#hasSeeked.start + 1)
+					this.#hasSeeked = null; // 判定を抜けたのでリセット
+				else return;
+			}
+
+			const diff = currentTime - this.#lastTime;
+			this.#lastTime = currentTime;
+
+			//シークを検出
+			if (Math.abs(diff) > 1){
+				this.#hasSeeked = this.#intervals.find(inter => Math.ceil(currentTime) >= inter.start - 1 && Math.floor(currentTime) < inter.end + 1);
+				return;
+			}
+
+			for (const interval of this.#intervals){
+				// 現在の再生時間が1秒以内で移動判定
+				if (this.#repeat && interval.isLoop){
+					if (currentTime >= interval.end && currentTime < interval.end + 1){
+						this.#seek(interval.start);
+						break;
+					}
+				}else if (this.#skip && currentTime >= interval.start && currentTime < interval.start + 1){
+					this.#seek(interval.end);
+					break;
+				}
+			}
+		});
+		//公開フォルダ内はここで直接取得すべきだが。。。
+	}
+
+	get reset(){return this.#reset}
+	get setChapters(){return this.#parse}
+	get navigate(){return this.#navigate}
+	set setSeek(fn){this.#setSeek(fn)}
+
+	#reset(){
+		this.#lastTime = 0;
+		this.#chapters = null;
+		this.#intervals = [];
+		while (this.#container.firstChild) this.#container.removeChild(this.#container.firstChild);
+	}
+	#setSeek(fn){this.#seek = fn}
+	#seek = val => this.#vid.currentTime = val;
+
+	#TYPE = {
+		IN: 1,
+		OUT: 2,
+		XIN: 3,
+		XOUT: 4,
+	}
+	#raw;
+	#chapters;
+	#intervals;
+	#parse(chap = '', dur){
+		this.#raw = chap;
+		if (dur) this.#container.style=`--dur:${dur};`;
+
+		this.#chapters = this.#parseOgm(chap) || this.#parseTvt(chap, dur) || [];
+
+		this.#intervals = this.#chapters.map((e,i)=>[e,i]).filter(e => e[0].type === this.#TYPE.XIN || e[0].type === this.#TYPE.IN).map(e => {
+			const startCh = e[0];
+			const endCh = this.#chapters.slice(e[1]).find(ch => startCh.type === this.#TYPE.XIN && ch.type === this.#TYPE.XOUT || startCh.type === this.#TYPE.IN && ch.type === this.#TYPE.OUT) || {sec: dur, last: true};
+			return {
+				// 頭、尻切れしないように丸める
+				start: Math.ceil(startCh.sec),
+				end: Math.floor(endCh.sec - (endCh.last ? 2 : 0.5)),
+				isLoop: (startCh.type === this.#TYPE.IN)
+			}
+		// 開始と終了が同じ秒になった場合は不要（あるいは最低1秒確保）
+		}).filter(e => e.end > e.start);
+
+		return [this.#chapters, this.#intervals];
+	}
+
+	#parseTvt(chap, dur){
+		if (!chap.startsWith('c-')) return;
+		// 前後の 'c' を除去して '-' で各セグメントに分割
+		const segments = chap.replace(/^c|c$/g, '').split('-').filter(s => s.length > 0);
+
+		return segments.map(segment => {
+			const match = segment.match(/^(\d+)([cd])/);
+
+			let timePart, unitChar, infoPart;
+
+			if (!match){
+				// 数字+単位の形式ではないイレギュラーなケース
+				timePart = segment;
+				unitChar = 'c'; // デフォルト
+				infoPart = "";
+			}else{
+				timePart = match[1]; // 数字部分
+				unitChar = match[2]; // 'c' または 'd'
+				infoPart = segment.substring(match[0].length); // 単位文字より後ろすべて
+			}
+
+			let time;
+			let info = infoPart;
+			let last = false;
+
+			// 1. 時間の判定と 0e (終端) の処理
+			if (timePart.includes('0e')){
+				time = dur;
+				// 0e 以外の文字（oxなど）があれば info の先頭に結合
+				info = timePart.replace('0e', '') + info;
+				last = true;
+			}else{
+				const divisor = (unitChar === 'c') ? 1000 : 10;
+				time = Number(timePart) / divisor;
+			}
+
+			// 2. 属性とチャプター名の分離
+			const [type, label] = this.#chapterType(info);
+
+			this.#addMarker(time, label, type);
+
+			return {
+				sec: time,
+				type: type,
+				name: label,
+				last: last
+			};
+		});
+	}
+	#parseOgm(chap){
+		if (!chap.startsWith('CHAPTER')) return;
+
+		const lines = chap.split(/\r?\n/).filter(line => line.trim() !== "");
+		const chapters = [];
+
+		// 2行1組（時間設定と名前設定）でループを回す
+		for (let i = 0; i < lines.length; i += 2){
+			const timeLine = lines[i];     // CHAPTER01=00:00:00.000
+			const nameLine = lines[i + 1]; // CHAPTER01NAME=Opening
+
+			if (!timeLine || !nameLine) break;
+
+			// 値の部分を抽出
+			const timeStr = timeLine.split('=')[1];
+			const nameStr = nameLine.split('=')[1];
+
+			if (timeStr && nameStr){
+				const [h, m, s] = timeStr.split(':');
+				const time = (parseInt(h) * 3600 + parseInt(m) * 60 + parseFloat(s));
+				const [type, label] = this.#chapterType(nameStr);
+				this.#addMarker(time, label, type);
+				chapters.push({
+					sec: time,
+					type: type,
+					name: label
+				});
+			}
+		}
+		return chapters;
+	}
+
+	#chapterType(info){
+		// 属性判定（長い順）
+		if (info.startsWith('ix')) return [this.#TYPE.XIN, info.substring(2)];
+		else if (info.startsWith('ox')) return [this.#TYPE.XOUT, info.substring(2)];
+		else if (info.startsWith('i')) return [this.#TYPE.IN ,info.substring(1)];
+		else if (info.startsWith('o')) return [this.#TYPE.OUT ,info.substring(1)];
+		return [0, info]
+	}
+
+	#addMarker(sec, label, type = 0){
+		const marker = document.createElement('div');
+		marker.className = `chapMaker c-${['point','in','out','start','end'][type]}`;
+		marker.style = `--sec:${sec??'var(--dur)'};`
+		marker.onclick = () => this.#seek(Math.floor(sec - 0.5));
+		marker.appendChild(document.createElement('div'));
+		const name = document.createElement('span')
+		name.innerText = label;
+		marker.appendChild(name);
+		this.#container.appendChild(marker);
+	}
+
+	#navigate(next = true){
+		if (!this.#chapters || this.#chapters.length === 0) return;
+
+		const currentTime = this.#currentTime();
+		let ch = null;
+
+		// 現在地より「後ろ」にあるチャプターの中で、一番近いものを探す スキップ開始は無視する
+		if (next) ch = this.#chapters.find(ch => ch.last || ch.sec > currentTime + 0.5 && !(this.#ignoreXIN && ch.type === this.#TYPE.XIN));
+			// +0.5s しているのは、チャプター地点にいる時に連打して同じ場所に留まらないようにするため
+		// 配列を後ろから検索して、現在地より前のものを見つける
+		else ch = this.#chapters.toReversed().find(ch => ch.sec < currentTime - 2);
+			// -2s しているのは、チャプター開始直後に「前」を押したら
+			// 同じチャプターの頭ではなく、さらに一つ前に戻るため
+
+		if (ch) this.#seek(Math.floor(ch.sec != null ? ch.sec - 0.5 : this.#vid.duration - 2));
+		else if(!next) this.#seek(0);	// 前にチャプターがない場合は動画の先頭へ
+	}
+
+}

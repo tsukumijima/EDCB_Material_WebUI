@@ -1,8 +1,11 @@
 #jikkyo-comm {
   /* The top/bottom border of #jikkyo-comm must be 1px */
-  border: 1px solid #ccc;
+  border: 1px solid light-dark(#ccc, #333);
   flex: 0 0 25%;
   margin-left: 1px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 #jikkyo-comm.minimized {
@@ -10,23 +13,62 @@
   width: 0;
 }
 
-#jikkyo-comm > button {
-  display: none;
-  margin: 0;
+#jikkyo-comm {
+    margin: 0;
 }
 
-#jikkyo-comm.shiftable > button {
-  display: unset;
+#jikkyo-comm > canvas {
+  height: 1.5em;
+  vertical-align: top;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
 }
 
+#jikkyo-config {
+  padding: 16px 16px 0;
+  > div {
+    padding: 4px 0;
+  }
+  button {
+    border: 1px solid;
+  }
+}
+#jikkyo-TM {
+  display: flex;
+  align-items: center;
+  > *:not(:last-child) {
+    margin-right: 8px;
+  }
+}
+
+#jikkyo-setting {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 20;
+}
+
+#jikkyo-config > input {
+  margin: 0.1em;
+}
+
+#jikkyo-config,
+#jikkyo-comm.minimized > #jikkyo-config,
 #jikkyo-comm.minimized > button {
   display: none;
 }
 
+#jikkyo-config.display {
+  display: inline-block;
+}
+
 #jikkyo-chats {
   font-size: small;
+  line-break: anywhere;
   overflow: auto;
-  height: 100%;
+  word-break: break-all;
+  z-index: 10;
 }
 
 #jikkyo-chats > .closed {
@@ -34,15 +76,15 @@
 }
 
 #jikkyo-chats > div > .nico {
-  background: #fff;
-  color: #00a;
+  /*background: #fff;*/
+  color: light-dark(#00a, #66c);
   margin-left: 0.2em;
   margin-right: 0.2em;
 }
 
 #jikkyo-chats > div > .refuge {
-  background: #fff;
-  color: #900;
+  /*background: #fff;*/
+  color: light-dark(#900, #c66);
   margin-left: 0.2em;
   margin-right: 0.2em;
 }
@@ -108,6 +150,67 @@
   animation-name: danmaku-center;
   animation-timing-function: linear;
   will-change: visibility;
+}
+
+#chapMaker-container {
+  width: 100%;
+  position: absolute;
+  transform: translate(0, -20px);
+}
+.chapMaker {
+  position: absolute;
+  left: calc(var(--sec) / var(--dur) * 100%);
+  padding: 5px;
+  transform: translateX(-50%);
+  cursor: pointer;
+  > div {
+    background: #d50000;
+    width: 15px;
+    height: 15px;
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    transition-duration: .2s;
+    transition-timing-function: cubic-bezier(.4,0,.2,1);
+  }
+  > span {
+    position: absolute;
+    min-width: 25px;
+    padding: 0 5px;
+    top: 50%;
+    left: 50%;
+    color: #EEEEEE;
+    background: rgba(0, 0, 0, .56);
+    font-size: 16px;
+    text-align: center;
+     white-space: nowrap;
+    line-height: 25px;
+    border-radius: 3px;
+    opacity: 0;
+    transform: translate(-50%, -30px) scale(0.5);
+    transition-duration: .2s;
+    transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+  }
+  &:hover{
+    > div {
+      transform: scale(1.5);
+      transform-origin: bottom;
+    }
+    > span {
+      opacity: 1;
+      transform: translate(-50%, -50px) scale(1);
+    }
+  }
+  &.c-start > div {
+    clip-path: polygon(0% 0%, 50% 0, 100% 0, 50% 20%, 50% 100%);
+  }
+  &.c-end > div {
+    clip-path: polygon(0% 0%, 50% 0, 100% 0, 50% 100%, 50% 20%);
+  }
+  &.c-in > div {
+    clip-path: polygon(0 0, 50% 100%, 50% 0);
+  }
+  &.c-out > div {
+    clip-path: polygon(50% 0, 50% 100%, 100% 0);
+  }
 }
 
 @keyframes danmaku {

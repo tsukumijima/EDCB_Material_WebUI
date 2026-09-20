@@ -1,6 +1,7 @@
 -- vim:set ft=lua:
 dofile(mg.script_name:gsub('[^\\/]*$','')..'util.lua')
 
+a={err='不正値入力'}
 post=AssertPost()
 if post then
   dataID=GetVarInt(mg.request_info.query_string,'id') or 0
@@ -8,9 +9,11 @@ if post then
   if mg.get_var(post,'addchg') then
     aa.recSetting=GetRecSetting(post)
     if aa.recSetting then
-      aa.dayOfWeekFlag=0
-      for i=7,1,-1 do
-        aa.dayOfWeekFlag=aa.dayOfWeekFlag*2+(GetVarInt(post,'checkDayOfWeek'..i)==1 and 1 or 0)
+      aa.dayOfWeekFlag=GetVarInt(post,'dayOfWeekFlag') or 0
+      if aa.dayOfWeekFlag==0 then
+        for i=7,1,-1 do
+          aa.dayOfWeekFlag=aa.dayOfWeekFlag*2+(GetVarInt(post,'checkDayOfWeek'..i)==1 and 1 or 0)
+        end
       end
       aa.startTime=GetVarTime(post, 'startTime')
       aa.durationSecond=(GetVarTime(post, 'endTime')-aa.startTime)%(24*3600)
@@ -26,19 +29,18 @@ if post then
       end
     end
     if done then
-      messege='<success>プログラム予約を'..(dataID==0 and '追加' or '変更')..'しました</success>'
+      a={success='プログラム予約を'..(dataID==0 and '追加' or '変更')..'しました'}
     else
-      messege='<err>プログラム予約を'..(dataID==0 and '追加' or '変更')..'できませんでした</err>'
+      a={err='プログラム予約を'..(dataID==0 and '追加' or '変更')..'できませんでした'}
     end
   elseif mg.get_var(post,'del') then
     edcb.DelManuAdd(aa.dataID)
-    messege='<success>プログラム予約を削除しました</success>'
+    a={success='プログラム予約を削除しました'}
   end
 end
 
-
-ct='<?xml version="1.0" encoding="UTF-8" ?><entry>'..(messege or '<err>不正値入力</err>')..'</entry>'
-mg.write(Response(200, 'text/xml', 'utf-8', #ct) ..'\r\n')
-if mg.request_info.request_method~='HEAD' then
-  mg.write(ct)
+if GetVarInt(mg.request_info.query_string,'json')==1 then
+  ResponseJson(a)
+else
+  ResponseXml(a)
 end

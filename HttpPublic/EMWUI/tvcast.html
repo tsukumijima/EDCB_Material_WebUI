@@ -43,7 +43,7 @@ ct.main='<main id="tvcast" class="mdl-layout__content">\n'
 <div id="InfoList" class="tagchip">
 <div><span class="material-icons">category</span><div id="genreInfo"></div></div>
 <div><span class="material-icons">videocam</span><div id="videoInfo"></div></div>
-<div><span class="material-icons">headphones</span><div id="audioInfo" class="container"></div></div>
+<div><span class="material-icons">speaker</span><div id="audioInfo" class="container"></div></div>
 <div><span class="material-icons">info</span><div id="otherInfo"></div></div>
 </div>
 <button for="#InfoList" class="toggle-info mdl-grid mdl-grid--no-spacing mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">expand_more</i></button>
@@ -69,12 +69,7 @@ end
 for i,v in ipairs(ServiceList) do
   if not v.partialReceptionFlag then
     table.insert(NetworkList[NetworkIndex(v.onid)],
-      '<div class="onair mdl-cell mdl-cell--12-col mdl-shadow--4dp Network'..NetworkIndex(v.onid)..(onid==v.onid and tsid==v.tsid and sid==v.sid and ' is_cast' or '')..(v.subCh and ' subCH hidden' or '')
-        ..'" data-onid="'..v.onid
-        ..'" data-tsid="'..v.tsid
-        ..'" data-sid="'..v.sid
-
-        ..'">\n'
+      '<div class="onair mdl-cell mdl-cell--12-col mdl-shadow--4dp Network'..NetworkIndex(v.onid)..(onid==v.onid and tsid==v.tsid and sid==v.sid and ' is_cast' or '')..(v.subCh and ' subCH hidden' or '')..'" data-id="'..v.onid..'-'..v.tsid..'-'..v.sid..'">\n'
 
         ..'<div class="mdl-grid">\n'
         ..'<div class="logo-container"><img src="'..PathToRoot()..'api/logo?onid='..v.onid..'&amp;sid='..v.sid..'"></div>\n'
@@ -89,7 +84,7 @@ end
 
 ctt={}
 label={}
-ct.css='<style>\n'
+ct.css=''
 for i,v in ipairs(NetworkList) do
   if #v>0 then
     ct.main=ct.main..'<input id="Network'..i..'" class="hidden" name="network"'..Radiobtn(NetworkType()[i]==NetworkType()[NetworkIndex(st.onid)])..'>\n'
@@ -98,7 +93,6 @@ for i,v in ipairs(NetworkList) do
     table.insert(ctt, table.concat(v))
   end
 end
-ct.css=ct.css..'</style>\n'
 
 ct.main=ct.main..'<div id="network" class="tag">\n'
   ..'<label type="button" for="Network0" class="mdl-chip"><span class="mdl-chip__text">すべて</span></label>\n'..table.concat(label)

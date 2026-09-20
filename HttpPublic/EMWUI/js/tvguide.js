@@ -293,11 +293,11 @@ class TvGuide{
 		//ジャンルトグル
 		$('.genreToggle').change(e => {
 			const $e = $(e.currentTarget);
-			$('.content-wrap.ex').removeClass('nothing choice');
+			$('.content-wrap.ex').removeClass('cont-0 choice');
 			$('.content').show();
 			if ($e.val() == 'all') return;
 
-			$('.content-wrap:not(.nothing)').not( $e.val() ).addClass('nothing ex').children().hide();
+			$('.content-wrap:not(.cont-0)').not( $e.val() ).addClass('cont-0 ex').children().hide();
 			$( $e.val() ).addClass('choice');
 		});
 
@@ -322,7 +322,7 @@ class TvGuide{
 						const messege = addRecMark(xml, $e, $e.parents('.content-wrap'));
 						Snackbar(`予約を${add ? '追加' : `${messege}に`}しました`);
 				},
-				end: () => $e.parents('.cell').removeClass('clicked')
+				err: () => $e.parents('.cell').removeClass('clicked')
 			});
 		});
 
