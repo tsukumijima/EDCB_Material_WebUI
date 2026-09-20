@@ -1,12 +1,6 @@
 EDCB Material WebUI
 ===================
 
-> [!WARNING]
-> 開発終了しました  
-> 今後は [EMWUI 3](https://github.com/EMWUI/EDCB_Material_WebUI/tree/E3) をよろしくお願いします
-
----
-
 ![Screenshot](https://github.com/tsukumijima/EDCB_Material_WebUI/assets/39271166/20737402-3a33-4c28-b8c6-43e23388fdad)
 
 ## 本家からの変更点
@@ -25,9 +19,15 @@ EDCB Material WebUI
 * ソースコードの文字コードを UTF-8 (BOM なし) に統一した
 * 2026年1月追記: 末尾の空白を削除した
 * 2026年1月追記: upstream から取り込んだ最新の変更のうち、明らかな実装ミスやバグを修正した
+* 2026年9月追記: 本家の現行バージョン最終版の変更に追従
 
 [DTV-Builds](https://github.com/tsukumijima/DTV-Builds) で配布している、EDCB のビルド済みアーカイブのファイル構成で利用することを想定しています。  
 それ以外の環境に導入する際は、適宜必要な実行ファイルを EDCB\Tools 以下に適切に配置してください。
+
+> [!WARNING]  
+> 本家リポジトリでは、現行バージョンは開発終了とし、設計を一新した [EMWUI 3](https://github.com/EMWUI/EDCB_Material_WebUI/tree/E3) へ移行した旨が記載されています。  
+> 一方、このフォークは主に [DTV-Builds](https://github.com/tsukumijima/DTV-Builds) で配布している、EDCB のビルド済みアーカイブに同梱する目的で維持しています。  
+> 操作体系や機能が異なる UI に移行すると既存ユーザーが混乱する可能性があることから、当面の間 EMWUI 3 への移行は行わず、現行のコードベースを維持する予定です。
 
 ### Tools フォルダに配置するツールについて
 
