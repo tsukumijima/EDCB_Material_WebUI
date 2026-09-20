@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   /* メインカラー */
   --primary-color: #3f51b5;
   --accent-color:  #ff4081;
@@ -35,7 +35,7 @@
 .dark  { color-scheme: dark; }
 
 ::selection{
-  color-scheme: light dark;
+  color-scheme: inherit;
   background:light-dark(#b3d4fc, #0969dd);
 }
 html {
@@ -419,7 +419,7 @@ dialog {
   position: relative;
   vertical-align: middle; }
   .content .mark {
-    color-scheme: light dark;
+    color-scheme: inherit;
     border-color: light-dark(var(--A700), rgb(from var(--A700) calc(r * var(--n)) calc(g * var(--n)) calc(b * var(--n))));
     background-color: light-dark(var(--accent-color), rgb(from var(--accent-color) calc(r * var(--n)) calc(g * var(--n)) calc(b * var(--n)))); }
   .reserve.mark {
@@ -1169,7 +1169,9 @@ h4 .mdl-button--icon {
   border-left: dotted 3px transparent;
   box-sizing: border-box; }
   .bg-line .content {
-    color-scheme: light dark; }
+    color-scheme: light; }
+  .dark .bg-line .content {
+    color-scheme: dark; }
   .titlescroll .content {
     position: -webkit-sticky;
     position:         sticky;
@@ -1926,8 +1928,9 @@ input[type=text] {
     .mdl-list__item-primary-content:has([name="hide"]:checked) {
       label, .mdl-list__item-sub-title {
         color: var(--disabled) !important; }
-      .logo {opacity: .54;}
-      @media (prefers-color-scheme: dark) {.logo {opacity: .26;} } }
+      .logo {opacity: .54;} }
+    html.dark #sort .mdl-list__item-primary-content:has([name="hide"]:checked) .logo {
+      opacity: .26; }
 
 .init {
   display:none; }

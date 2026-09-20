@@ -1,6 +1,6 @@
 function Version(a)
   local ver={
-    css='260415',
+    css='260920',
     common='260415',
     tvguide='260327',
     player='260327',
@@ -35,6 +35,7 @@ function Template(temp)
   edcb.htmlEscape=0
   local path=temp.path or ''
   local roboto=tonumber(edcb.GetPrivateProfile('SET','Roboto',true,INI))~=0
+  local dark=tonumber(edcb.GetPrivateProfile('SET','dark',false,INI))~=0
   local mdl=edcb.GetPrivateProfile('SET','mdl','material.min.css',INI)
   local theme=Split(edcb.GetPrivateProfile('SET','theme','',INI),',')
   local olympic=tonumber(edcb.GetPrivateProfile('SET','Olympic',false,INI))~=0
@@ -60,7 +61,7 @@ function Template(temp)
   local s=CreateContentBuilder(GZIP_THRESHOLD_BYTE)
   s:Append([=[
 <!doctype html>
-<html lang="ja">
+<html lang="ja" class="]=]..(dark and 'dark' or 'light')..[=[">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
